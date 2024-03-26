@@ -1,0 +1,31 @@
+<!-- templates/register.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - SnapTicket</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+</head>
+<body>
+    <div class="register-container">
+        <h2>Cadastro</h2>
+        <form method="post" enctype="multipart/form-data">
+            <input type="text" placeholder="Nome" name="nome" required>
+            <input type="text" placeholder="Sobrenome" name="sobrenome" required>
+            <input type="email" placeholder="E-mail" name="email" required>
+            <input type="tel" placeholder="Telefone" name="telefone" required>
+            <input type="text" placeholder="CPF" name="cpf" required>
+            <div class="file-input-container">
+                <label for="selfie" class="custom-file-upload">
+                    <i class="fa fa-camera"></i> Tirar uma foto
+                </label>
+                <input type="file" id="selfie" name="selfie" accept="image/*">
+            </div>
+            <button type="submit" class="btn-submit">Finalizar cadastro</button>
+        </form>
+        <div class="login-footer">
+            Já tem uma conta? <a href="{{ url_for('main.login') }}">Acessar</a>
+        </div>
+    </div>
+</body>
+</html>

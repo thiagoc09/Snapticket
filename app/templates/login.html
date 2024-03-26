@@ -1,0 +1,22 @@
+<!-- templates/login.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - SnapTicket</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="login-container">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SnapTicket Logo" class="logo">
+        <form action="{{ url_for('main.login') }}" method="post">
+            <input type="email" id="email" name="email" placeholder="E-mail" required>
+            <input type="password" id="senha" name="senha" placeholder="Senha" required>
+            <div class="buttons">
+                <button type="submit" class="btn-acessar">Acessar</button>
+                <button onclick="location.href='{{ url_for('main.register') }}'" class="btn-cadastro">Cadastro</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
