@@ -1,10 +1,13 @@
 # app/__init__.py
+
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from config import Config
 import os
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
@@ -14,8 +17,11 @@ def create_app():
         os.makedirs(app.config['UPLOAD_FOLDER'])
 
     db.init_app(app)
+    migrate.init_app(app, db)
 
-    from app.main import main as main_blueprint
+    from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
+
+    from app import models  # Importe os modelos aqui
 
     return app
