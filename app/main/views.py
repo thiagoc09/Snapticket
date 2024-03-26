@@ -30,12 +30,16 @@ def login():
 def register():
     if request.method == 'POST':
         nome = request.form.get('nome')
-        sobrenome = request.form.get('sobrenome')
         email = request.form.get('email')
         telefone = request.form.get('telefone')
         cpf = request.form.get('cpf')
         senha = request.form.get('senha')
-        senha_hash = generate_password_hash(senha)
+        
+         # Verifique se a senha não está vazia
+        if not senha:
+            flash('Senha é obrigatória.')
+            return redirect(url_for('main.register'))
+        
         
         selfie = request.files.get('selfie')
         if selfie and allowed_file(selfie.filename):
@@ -43,19 +47,19 @@ def register():
             selfie_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             selfie.save(selfie_path)
         else:
+            # Se não for um POST, simplesmente renderiza o template de registro
             flash('Tipo de arquivo não permitido.')
             return redirect(request.url)
         
         novo_usuario = Usuario(
             nome=nome,
-            sobrenome=sobrenome,
             email=email,
             telefone=telefone,
             cpf=cpf,
-            senha_hash=senha_hash,
             caminho_selfie=selfie_path
         )
-        
+        novo_usuario.set_password(senha)
+       
         db.session.add(novo_usuario)
         db.session.commit()
         
