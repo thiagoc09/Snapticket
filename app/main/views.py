@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
 from . import main  # Importação do Blueprint 'main'
 from .. import db
-from ..models import Usuario
+from ..models import Usuario, Evento
 import os
 
 # Função auxiliar para validar o arquivo de upload
