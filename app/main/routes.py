@@ -2,10 +2,10 @@
 from flask import render_template, request, redirect, url_for, flash, current_app
 from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
-from .models import Usuario
+from .models import Usuario, Evento
 from . import db
+from .main import main
 import os
-from . import main
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -13,21 +13,21 @@ def allowed_file(filename):
 
 @main.route('/')
 def home():
-    return render_template('login.html')
-
+    # Aqui você pode querer adicionar uma lógica para buscar eventos do banco de dados
+    # eventos = Evento.query.all()
+    return render_template('login.html')  #, eventos=eventos)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        # Aqui deve vir a lógica de login do usuário
         pass
     return render_template('login.html')
-
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         nome = request.form.get('nome')
-        sobrenome = request.form.get('sobrenome')
         email = request.form.get('email')
         telefone = request.form.get('telefone')
         cpf = request.form.get('cpf')
@@ -40,12 +40,10 @@ def register():
             selfie_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             selfie.save(selfie_path)
         else:
-            flash('Tipo de arquivo não permitido.')
-            return redirect(request.url)
+            selfie_path = None
         
         novo_usuario = Usuario(
             nome=nome,
-            sobrenome=sobrenome,
             email=email,
             telefone=telefone,
             cpf=cpf,
@@ -56,5 +54,35 @@ def register():
         db.session.add(novo_usuario)
         db.session.commit()
         
-        return redirect(url_for('home'))
+        return redirect(url_for('main.home'))
     return render_template('register.html')
+
+@main.route('/cadastro_evento', methods=['GET', 'POST'])
+def cadastro_evento():
+    if request.method == 'POST':
+        nome_evento = request.form.get('nome_evento')
+        data_evento = request.form.get('data_evento')
+        localizacao = request.form.get('localizacao')
+        descricao = request.form.get('descricao')
+        
+        foto_capa = request.files.get('foto_capa')
+        if foto_capa and allowed_file(foto_capa.filename):
+            filename_capa = secure_filename(foto_capa.filename)
+            foto_capa_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename_capa)
+            foto_capa.save(foto_capa_path)
+        else:
+            foto_capa_path = None
+        
+        novo_evento = Evento(
+            nome_evento=nome_evento, 
+            data_evento=data_evento, 
+            localizacao=localizacao, 
+            descricao=descricao, 
+            foto_capa=foto_capa_path
+        )
+        db.session.add(novo_evento)
+        db.session.commit()
+
+        return redirect(url_for('main.home'))
+
+    return render_template('cadastro_evento.html')

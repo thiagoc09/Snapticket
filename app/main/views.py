@@ -66,3 +66,32 @@ def register():
         return redirect(url_for('main.login'))
     return render_template('register.html')
 
+@main.route('/cadastro_evento', methods=['GET', 'POST'])
+def cadastro_evento():
+    if request.method == 'POST':
+        nome_evento = request.form.get('nome_evento')
+        data_evento = request.form.get('data_evento')
+        localizacao = request.form.get('localizacao')
+        descricao = request.form.get('descricao')
+
+        foto_capa = request.files.get('foto_capa')
+        if foto_capa and allowed_file(foto_capa.filename):
+            filename_capa = secure_filename(foto_capa.filename)
+            foto_capa_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename_capa)
+            foto_capa.save(foto_capa_path)
+        else:
+            foto_capa_path = None
+
+        novo_evento = Evento(
+            nome_evento=nome_evento,
+            data_evento=data_evento,
+            localizacao=localizacao,
+            descricao=descricao,
+            foto_capa=foto_capa_path
+        )
+        db.session.add(novo_evento)
+        db.session.commit()
+
+        return redirect(url_for('main.home'))
+
+    return render_template('cadastro_evento.html')

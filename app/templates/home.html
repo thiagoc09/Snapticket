@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Adicionar o CSS apropriado aqui -->
+</head>
+<body>
+    <h2>Eventos Cadastrados</h2>
+        
+    {% for evento in eventos %}
+    <div class="evento">
+        {% if evento.foto_capa %}
+            <img src="{{ url_for('static', filename='upload_folder/' + evento.foto_capa) }}" alt="Capa do Evento">
+        {% endif %}
+        <h3>{{ evento.nome }}</h3>
+        <p>{{ evento.data }}</p>
+        <p>{{ evento.localizacao }}</p>
+        <p>{{ evento.descricao }}</p>
+    </div>
+    {% endfor %}
+</body>
+</html>

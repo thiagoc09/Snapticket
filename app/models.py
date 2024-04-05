@@ -1,7 +1,6 @@
-# app/models.py
 from . import db  # Importando a instância de SQLAlchemy criada em __init__.py
 from werkzeug.security import generate_password_hash
-
+from datetime import datetime
 
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
@@ -14,16 +13,15 @@ class Usuario(db.Model):
     senha_hash = db.Column(db.String(128), nullable=False)
     caminho_selfie = db.Column(db.String(120), nullable=True)  # Caminho para a imagem de selfie para reconhecimento facial
     
-    ###HASHEAMENTO DE SENHA
     def set_password(self, senha):
         """Cria um hash da senha para armazenamento seguro."""
         self.senha_hash = generate_password_hash(senha)
 
     # Relacionamentos
-    fotos = db.relationship('Foto', backref='usuario', lazy='dynamic')
+    fotos = db.relationship('FotoEvento', backref='usuario', lazy='dynamic')
 
     def __repr__(self):
-        return f'<Usuario {self.nome} {self.sobrenome}>'
+        return f'<Usuario {self.nome}>'
 
 class Evento(db.Model):
     __tablename__ = 'eventos'
@@ -33,21 +31,21 @@ class Evento(db.Model):
     data_evento = db.Column(db.DateTime, nullable=False)
     localizacao = db.Column(db.String(120), nullable=False)
     descricao = db.Column(db.Text, nullable=True)
+    foto_capa = db.Column(db.String(120), nullable=True)  # Caminho para a foto de capa do evento
 
     # Relacionamentos
-    fotos = db.relationship('Foto', backref='evento', lazy='dynamic')
+    fotos_evento = db.relationship('FotoEvento', backref='evento', lazy='dynamic')
 
     def __repr__(self):
         return f'<Evento {self.nome_evento}>'
 
-class Foto(db.Model):
-    __tablename__ = 'fotos'
+class FotoEvento(db.Model):
+    __tablename__ = 'fotos_evento'
 
     id = db.Column(db.Integer, primary_key=True)
     evento_id = db.Column(db.Integer, db.ForeignKey('eventos.id'), nullable=False)
-    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     caminho_foto = db.Column(db.String(120), nullable=False)
-    timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Foto {self.id} do Evento {self.evento_id}>'
+        return f'<FotoEvento {self.id} do Evento {self.evento_id}>'
