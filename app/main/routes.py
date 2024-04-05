@@ -6,24 +6,35 @@ from .models import Usuario, Evento
 from . import db
 from .main import main
 import os
+from werkzeug.security import check_password_hash
+
 
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@main.route('/')
+@main.route('/home')
 def home():
-    # Aqui você pode querer adicionar uma lógica para buscar eventos do banco de dados
-    # eventos = Evento.query.all()
-    return render_template('login.html')  #, eventos=eventos)
+    # Buscar todos os eventos
+    eventos = Evento.query.all()
+    return render_template('home.html', eventos=eventos)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Aqui deve vir a lógica de login do usuário
-        pass
-    return render_template('login.html')
+        email = request.form.get('email')
+        senha = request.form.get('senha')
 
+        # Verificar se o usuário existe e a senha está correta
+        usuario = Usuario.query.filter_by(email=email).first()
+        if usuario and check_password_hash(usuario.senha_hash, senha):
+            # Implemente aqui a lógica de autenticação, como criar uma sessão de usuário
+            # Redirecionar para a página home
+            return redirect(url_for('main.home'))
+        else:
+            flash('E-mail ou senha inválidos!')
+
+    return render_template('login.html')
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

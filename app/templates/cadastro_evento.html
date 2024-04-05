@@ -6,8 +6,8 @@
 <body>
     <h2>Cadastro de Evento</h2>
     <form method="post" action="{{ url_for('main.cadastro_evento') }}" enctype="multipart/form-data">
-        <input type="text" name="nome" placeholder="Nome do Evento" required>
-        <input type="date" name="data" required>
+        <input type="text" name="nome_evento" placeholder="Nome do Evento" required>
+        <input type="date" name="data_evento" required>
         <input type="text" name="localizacao" placeholder="Localização" required>
         <textarea name="descricao" placeholder="Descrição"></textarea>
         <input type="file" name="foto_capa" accept="image/*">

@@ -19,6 +19,7 @@ class Usuario(db.Model):
 
     # Relacionamentos
     fotos = db.relationship('FotoEvento', backref='usuario', lazy='dynamic')
+    
 
     def __repr__(self):
         return f'<Usuario {self.nome}>'
@@ -35,6 +36,7 @@ class Evento(db.Model):
 
     # Relacionamentos
     fotos_evento = db.relationship('FotoEvento', backref='evento', lazy='dynamic')
+    
 
     def __repr__(self):
         return f'<Evento {self.nome_evento}>'
@@ -44,8 +46,8 @@ class FotoEvento(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     evento_id = db.Column(db.Integer, db.ForeignKey('eventos.id'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     caminho_foto = db.Column(db.String(120), nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-
     def __repr__(self):
         return f'<FotoEvento {self.id} do Evento {self.evento_id}>'

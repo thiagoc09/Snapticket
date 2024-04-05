@@ -6,6 +6,8 @@ from . import main  # Importação do Blueprint 'main'
 from .. import db
 from ..models import Usuario, Evento
 import os
+from datetime import datetime
+
 
 # Função auxiliar para validar o arquivo de upload
 def allowed_file(filename):
@@ -70,9 +72,16 @@ def register():
 def cadastro_evento():
     if request.method == 'POST':
         nome_evento = request.form.get('nome_evento')
-        data_evento = request.form.get('data_evento')
+        data_evento_str = request.form.get('data_evento')  # Recebendo a data como string
         localizacao = request.form.get('localizacao')
         descricao = request.form.get('descricao')
+        
+        # Converter a string da data em um objeto datetime
+        try:
+            data_evento = datetime.strptime(data_evento_str, '%Y-%m-%d').date()
+        except ValueError:
+            flash('Formato de data inválido.')
+            return redirect(url_for('main.cadastro_evento'))
 
         foto_capa = request.files.get('foto_capa')
         if foto_capa and allowed_file(foto_capa.filename):
@@ -81,12 +90,12 @@ def cadastro_evento():
             foto_capa.save(foto_capa_path)
         else:
             foto_capa_path = None
-
+        
         novo_evento = Evento(
-            nome_evento=nome_evento,
-            data_evento=data_evento,
-            localizacao=localizacao,
-            descricao=descricao,
+            nome_evento=nome_evento, 
+            data_evento=data_evento, 
+            localizacao=localizacao, 
+            descricao=descricao, 
             foto_capa=foto_capa_path
         )
         db.session.add(novo_evento)
