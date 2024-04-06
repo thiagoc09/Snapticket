@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
+     <!-- ... -->
+     {% for message in get_flashed_messages() %}
+     <div>{{ message }}</div>
+     {% endfor %}
+     <!-- Formulário de login aqui -->
     <div class="login-container">
         <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SnapTicket Logo" class="logo">
         <form action="{{ url_for('main.login') }}" method="post">

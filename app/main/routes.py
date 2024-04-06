@@ -7,6 +7,7 @@ from . import db
 from .main import main
 import os
 from werkzeug.security import check_password_hash
+from flask import flash
 
 
 def allowed_file(filename):
@@ -24,17 +25,20 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('senha')
+        print(email)
 
-        # Verificar se o usuário existe e a senha está correta
         usuario = Usuario.query.filter_by(email=email).first()
+        print(usuario)
+
         if usuario and check_password_hash(usuario.senha_hash, senha):
-            # Implemente aqui a lógica de autenticação, como criar uma sessão de usuário
-            # Redirecionar para a página home
+            print("Login bem-sucedido!")
             return redirect(url_for('main.home'))
         else:
-            flash('E-mail ou senha inválidos!')
+            flash('E-mail ou senha incorretos')
+            print("Falha no login")
 
     return render_template('login.html')
+
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':

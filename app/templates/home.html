@@ -1,21 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Adicionar o CSS apropriado aqui -->
+    <title>Eventos</title>
+    <!-- Incluir links para CSS e outros recursos aqui -->
 </head>
 <body>
-    <h2>Eventos Cadastrados</h2>
-        
-    {% for evento in eventos %}
-    <div class="evento">
-        {% if evento.foto_capa %}
-            <img src="{{ url_for('static', filename='upload_folder/' + evento.foto_capa) }}" alt="Capa do Evento">
-        {% endif %}
-        <h3>{{ evento.nome }}</h3>
-        <p>{{ evento.data }}</p>
-        <p>{{ evento.localizacao }}</p>
-        <p>{{ evento.descricao }}</p>
+    <h1>Eventos</h1>
+    <div class="eventos-container">
+        {% for evento in eventos %}
+            <div class="evento">
+                <h2>{{ evento.nome_evento }}</h2>
+                <p>Data: {{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
+                <p>Localização: {{ evento.localizacao }}</p>
+                <p>Descrição: {{ evento.descricao }}</p>
+                <!-- Incluir imagem se foto_capa estiver disponível -->
+                {% if evento.foto_capa %}
+                    <img src="{{ url_for('static', filename='uploads/' ~ evento.foto_capa) }}" alt="Capa do Evento">
+                {% endif %}
+            </div>
+        {% else %}
+            <p>Nenhum evento encontrado.</p>
+        {% endfor %}
     </div>
-    {% endfor %}
 </body>
 </html>
