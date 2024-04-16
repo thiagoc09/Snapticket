@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eventos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}"> <!-- Seu CSS base -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}"> <!-- O CSS específico para esta página -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 </head>
 <body>
 
 <div class="menu">
-    <!-- Aqui você pode incluir seu menu ou barra de navegação -->
+    <!-- Seu menu aqui -->
 </div>
 
 <div class="event-list">
     {% for evento in eventos %}
     <div class="event-card">
         <div class="event-image" style="background-image: url({{ url_for('static', filename='images/eventos/' ~ evento.foto_capa) }});">
-            <!-- A imagem de fundo do evento é definida no CSS -->
+            <!-- A imagem do evento aqui -->
         </div>
         <div class="event-info">
             <h3>{{ evento.nome_evento }}</h3>
@@ -27,10 +27,8 @@
     </div>
     {% endfor %}
 </div>
-<form action="{{ url_for('main.logout') }}" method="post">
-    <input type="submit" value="Logout">
-</form>
 
+<a href="{{ url_for('main.logout') }}" class="logout-button">Sair</a>
 
 </body>
 </html>

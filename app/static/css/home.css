@@ -1,56 +1,86 @@
-/* Assumindo que o restante do CSS já está definido em outro arquivo como base.css ou similar. */
-
-.event-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 20px;
-}
-
-.event-card {
-    display: flex;
-    flex-direction: column;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    background: white; /* Ou qualquer cor de fundo que você tenha usado nos outros css */
-}
-
-.event-image {
-    width: 100%;
-    height: 200px; /* ajuste conforme necessário */
-    background-size: cover;
-    background-position: center;
-}
-
-.event-info {
-    padding: 15px;
-    background: #f2f2f2; /* Cor de fundo do conteúdo do evento, ajuste conforme necessário */
-}
-
-.event-info h3 {
+/* home.css */
+body, html {
+    height: 100%;
     margin: 0;
-    color: #333; /* Cor do texto, ajuste conforme necessário */
-    font-size: 1.25em; /* Tamanho do texto do título do evento */
-}
-
-.event-info p {
-    color: #666; /* Cor do texto, ajuste conforme necessário */
-}
-
-/* Ajustes para responsividade */
-@media (max-width: 768px) {
-    .event-list {
-        padding: 10px;
-    }
-
-    .event-card {
-        height: auto;
-    }
-
-    .event-image {
-        height: 150px; /* Ajuste para dispositivos menores */
-    }
-}
-
-/* Você pode adicionar mais estilos e mídia queries conforme necessário para se adequar ao seu design */
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .menu {
+    width: 100%;
+    background-color: #333;
+    overflow: hidden;
+  }
+  
+  .menu a {
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  .menu a:hover {
+    background-color: #ddd;
+    color: black;
+  }
+  
+  .event-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  
+  .event-card {
+    background: #fff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    transition: 0.3s;
+    width: 80%; /* You can adjust the width as needed */
+    margin: 10px 0;
+  }
+  
+  .event-card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+  .event-image {
+    width: 100%;
+    height: 200px; /* Adjust the height as needed */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  
+  .event-info {
+    padding: 2px 16px;
+  }
+  
+  .event-info h3 {
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .event-info p {
+    font-size: 18px;
+    color: #666;
+  }
+  
+  .logout-button {
+    display: block;
+    width: 100px;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+  
+  .logout-button:hover {
+    background-color: #da190b;
+  }
+  
