@@ -1,26 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eventos</title>
-    <!-- Incluir links para CSS e outros recursos aqui -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}"> <!-- Seu CSS base -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}"> <!-- O CSS específico para esta página -->
 </head>
 <body>
-    <h1>Eventos</h1>
-    <div class="eventos-container">
-        {% for evento in eventos %}
-            <div class="evento">
-                <h2>{{ evento.nome_evento }}</h2>
-                <p>Data: {{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
-                <p>Localização: {{ evento.localizacao }}</p>
-                <p>Descrição: {{ evento.descricao }}</p>
-                <!-- Incluir imagem se foto_capa estiver disponível -->
-                {% if evento.foto_capa %}
-                    <img src="{{ url_for('static', filename='uploads/' ~ evento.foto_capa) }}" alt="Capa do Evento">
-                {% endif %}
-            </div>
-        {% else %}
-            <p>Nenhum evento encontrado.</p>
-        {% endfor %}
+
+<div class="menu">
+    <!-- Aqui você pode incluir seu menu ou barra de navegação -->
+</div>
+
+<div class="event-list">
+    {% for evento in eventos %}
+    <div class="event-card">
+        <div class="event-image" style="background-image: url({{ url_for('static', filename='images/eventos/' ~ evento.foto_capa) }});">
+            <!-- A imagem de fundo do evento é definida no CSS -->
+        </div>
+        <div class="event-info">
+            <h3>{{ evento.nome_evento }}</h3>
+            <p>{{ evento.data_evento.strftime('%d/%m/%Y') }} - {{ evento.localizacao }}</p>
+            <p>{{ evento.descricao }}</p>
+        </div>
     </div>
+    {% endfor %}
+</div>
+<form action="{{ url_for('main.logout') }}" method="post">
+    <input type="submit" value="Logout">
+</form>
+
+
 </body>
 </html>

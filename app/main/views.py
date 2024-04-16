@@ -1,33 +1,49 @@
-# app/main/views.py
-from flask import render_template, request, redirect, url_for, flash, current_app
-from werkzeug.security import generate_password_hash
+from flask import render_template, request, redirect, url_for, flash, current_app, session  # Adicionar session
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from . import main  # Importação do Blueprint 'main'
+from . import main
 from .. import db
 from ..models import Usuario, Evento
 import os
 from datetime import datetime
-
 
 # Função auxiliar para validar o arquivo de upload
 def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Rota para a página inicial que redireciona para a página de login
 @main.route('/')
 def home():
-    return redirect(url_for('main.login'))
+    # Verifica se o usuário está logado
+    if 'logged_in' not in session or not session['logged_in']:
+        return redirect(url_for('main.login'))
+    eventos = Evento.query.all()
+    return render_template('home.html', eventos=eventos)
 
-# Rota para a página de login
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # CREDENCIAIS DE LOGIN
-        pass
+        email = request.form.get('email')
+        senha = request.form.get('senha')
+
+        usuario = Usuario.query.filter_by(email=email).first()
+
+        if usuario and check_password_hash(usuario.senha_hash, senha):
+            session['logged_in'] = True  # Define a sessão como logada
+            return redirect(url_for('main.home'))
+        else:
+            flash('E-mail ou senha incorretos')
+            return render_template('login.html')
+
+    # Certifica-se de limpar o estado da sessão ao carregar a página de login
+    session.pop('logged_in', None)
     return render_template('login.html')
 
-# Rota para a página de registro de usuário
+@main.route('/logout', methods=['POST'])
+def logout():
+    session.pop('logged_in', None)  # Limpa a sessão ao fazer logout
+    return redirect(url_for('main.login'))
+
 @main.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -37,46 +53,57 @@ def register():
         cpf = request.form.get('cpf')
         senha = request.form.get('senha')
         
-         # Verifique se a senha não está vazia
+        # Verifica se a senha foi fornecida
         if not senha:
             flash('Senha é obrigatória.')
             return redirect(url_for('main.register'))
         
+        # Verifica se o email já está cadastrado
+        if Usuario.query.filter_by(email=email).first():
+            flash('Este email já está cadastrado.')
+            return redirect(url_for('main.register'))
         
         selfie = request.files.get('selfie')
+        selfie_path = None
         if selfie and allowed_file(selfie.filename):
             filename = secure_filename(selfie.filename)
             selfie_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
             selfie.save(selfie_path)
         else:
-            # Se não for um POST, simplesmente renderiza o template de registro
-            flash('Tipo de arquivo não permitido.')
-            return redirect(request.url)
+            flash('Tipo de arquivo não permitido para selfie.')
+            return redirect(url_for('main.register'))
         
+        # Criar novo usuário e salvar no banco de dados
         novo_usuario = Usuario(
             nome=nome,
             email=email,
             telefone=telefone,
             cpf=cpf,
+            senha_hash=generate_password_hash(senha),  # Usando hash novamente
             caminho_selfie=selfie_path
         )
-        novo_usuario.set_password(senha)
-       
+        
         db.session.add(novo_usuario)
-        db.session.commit()
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            flash('Erro ao registrar usuário. Por favor, tente novamente.')
+            return redirect(url_for('main.register'))
         
         return redirect(url_for('main.login'))
+    
+    # Este return será executado se o método for GET
     return render_template('register.html')
 
 @main.route('/cadastro_evento', methods=['GET', 'POST'])
 def cadastro_evento():
     if request.method == 'POST':
         nome_evento = request.form.get('nome_evento')
-        data_evento_str = request.form.get('data_evento')  # Recebendo a data como string
+        data_evento_str = request.form.get('data_evento')
         localizacao = request.form.get('localizacao')
         descricao = request.form.get('descricao')
         
-        # Converter a string da data em um objeto datetime
         try:
             data_evento = datetime.strptime(data_evento_str, '%Y-%m-%d').date()
         except ValueError:
@@ -92,10 +119,10 @@ def cadastro_evento():
             foto_capa_path = None
         
         novo_evento = Evento(
-            nome_evento=nome_evento, 
-            data_evento=data_evento, 
-            localizacao=localizacao, 
-            descricao=descricao, 
+            nome_evento=nome_evento,
+            data_evento=data_evento,
+            localizacao=localizacao,
+            descricao=descricao,
             foto_capa=foto_capa_path
         )
         db.session.add(novo_evento)

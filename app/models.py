@@ -20,6 +20,7 @@ class Usuario(db.Model):
     # Relacionamentos
     fotos = db.relationship('FotoEvento', backref='usuario', lazy='dynamic')
     
+  
 
     def __repr__(self):
         return f'<Usuario {self.nome}>'
