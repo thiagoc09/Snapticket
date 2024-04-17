@@ -1,3 +1,4 @@
+Copy code
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -10,14 +11,14 @@
 <body>
 
 <div class="menu">
-    <!-- Seu menu aqui -->
+    
 </div>
 
 <div class="event-list">
     {% for evento in eventos %}
     <div class="event-card">
         <div class="event-image" style="background-image: url({{ url_for('static', filename='images/eventos/' ~ evento.foto_capa) }});">
-            <!-- A imagem do evento aqui -->
+            <!-- A imagem de fundo do evento é definida no CSS -->
         </div>
         <div class="event-info">
             <h3>{{ evento.nome_evento }}</h3>
@@ -27,8 +28,9 @@
     </div>
     {% endfor %}
 </div>
-
-<a href="{{ url_for('main.logout') }}" class="logout-button">Sair</a>
-
+    <!-- Aqui você pode incluir seu menu ou barra de navegação -->
+    <form action="{{ url_for('main.logout') }}" method="post">
+        <input type="submit" value="Logout">
+    </form>
 </body>
 </html>
