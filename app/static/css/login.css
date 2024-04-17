@@ -51,8 +51,10 @@ button {
     cursor: pointer;
     font-size: 16px;
     color: white;
+    transition-duration: 0.4s; /* Transition for hover effect */
 }
 
+/* Style for the access button */
 .btn-acessar {
     background-color: #0d6efd;
 }
@@ -61,10 +63,24 @@ button {
     background-color: #0b5ed7;
 }
 
+/* Style for the registration button */
 .btn-cadastro {
-    background-color: #4CAF50; /* Green */
+    background-color: #28a745; /* Green */
 }
 
 .btn-cadastro:hover {
-    background-color: #45a049;
+    background-color: #218838;
+}
+
+/* Style for the organizer's phrase */
+.organizador-frase a {
+    color: white; /* Text color */
+    font-weight: bold; /* Bold for style matching */
+    display: block; /* Ensures the link is on its own line */
+    margin-top: 10px; /* Margin at the top */
+    text-decoration: none; /* No underline */
+}
+
+.organizador-frase a:hover {
+    text-decoration: underline; /* Underline on hover */
 }

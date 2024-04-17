@@ -48,7 +48,7 @@ def login():
     session.pop('logged_in', None)
     return render_template('login.html')
 
-@main.route('/logout')
+@main.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
     logout_user()
@@ -118,38 +118,36 @@ def cadastro_evento():
         localizacao = request.form.get('localizacao')
         descricao = request.form.get('descricao')
 
-        # Tenta converter a string da data em um objeto datetime
         try:
             data_evento = datetime.strptime(data_evento_str, '%Y-%m-%d').date()
         except ValueError:
             flash('Formato de data inválido.')
             return redirect(url_for('main.cadastro_evento'))
 
-        # Lida com o upload da foto de capa
         foto_capa = request.files.get('foto_capa')
         if foto_capa and allowed_file(foto_capa.filename):
             filename_capa = secure_filename(foto_capa.filename)
-            foto_capa_path = os.path.join(current_app.config['EVENT_COVERS_FOLDER'], filename_capa)
-            foto_capa.save(foto_capa_path)
-            foto_capa_path = 'images/eventos/' + filename_capa  # Caminho relativo para uso no HTML
-        else:
-            foto_capa_path = 'images/eventos/default_cover.jpg'  # Caminho padrão para imagem de capa
+            # Salva a imagem na pasta correta
+            foto_capa.save(os.path.join(current_app.config['EVENT_COVERS_FOLDER'], filename_capa))
+            # Salva apenas o nome do arquivo para referência no banco de dados
+            foto_capa_db_path = os.path.join('uploads', 'event_covers', filename_capa).replace('\\', '/')
 
-        # Cria novo evento com as informações recebidas e o caminho da foto de capa
+        else:
+            # Use um caminho relativo para a imagem padrão
+            foto_capa_db_path = 'uploads/event_covers/default_cover.jpg'  # Supondo que você tem uma imagem padrão nomeada 'default_cover.jpg'
+
+
         novo_evento = Evento(
             nome_evento=nome_evento,
             data_evento=data_evento,
             localizacao=localizacao,
             descricao=descricao,
-            foto_capa=foto_capa_path
+            foto_capa=foto_capa_db_path
         )
         
-        # Adiciona o novo evento ao banco de dados e commita as alterações
         db.session.add(novo_evento)
         db.session.commit()
 
-        # Redireciona para a home após o sucesso no cadastro
         return redirect(url_for('main.home'))
 
-    # Retorna a página de cadastro de evento caso seja um GET ou ocorra algum erro
     return render_template('cadastro_evento.html')

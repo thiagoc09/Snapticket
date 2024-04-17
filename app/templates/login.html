@@ -12,13 +12,15 @@
             <input type="email" id="email" name="email" placeholder="E-mail" required>
             <input type="password" id="senha" name="senha" placeholder="Senha" required>
             <div class="buttons">
-                <button type="submit" class="btn-acessar">Acessar</button>
+                <button type="submit" class="btn btn-acessar">Acessar</button>
                 <!-- Botão para a página de cadastro -->
-                <button onclick="location.href='{{ url_for('main.register') }}'" class="btn-cadastro">Cadastro</button>
+                <button onclick="location.href='{{ url_for('main.register') }}'" class="btn btn-cadastro">Cadastro</button>
+    
             </div>
         </form>
         <!-- Link para a página de cadastro de evento -->
-        <p>Organizador de evento? <a href="{{ url_for('main.cadastro_evento') }}">Cadastre seu evento aqui</a></p>
+        <p class="organizador-frase">Organizador de evento? <a href="{{ url_for('main.cadastro_evento') }}">Cadastre seu evento aqui</a></p>
+
     </div>
 
 </body>
