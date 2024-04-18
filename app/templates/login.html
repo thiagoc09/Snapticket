@@ -14,7 +14,8 @@
             <div class="buttons">
                 <button type="submit" class="btn btn-acessar">Acessar</button>
                 <!-- Botão para a página de cadastro -->
-                <button onclick="location.href='{{ url_for('main.register') }}'" class="btn btn-cadastro">Cadastro</button>
+                <button onclick="window.location.href='{{ url_for('main.register') }}'" type="button" class="btn-cadastro">Cadastro</button>
+
     
             </div>
         </form>
