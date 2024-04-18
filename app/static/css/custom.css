@@ -1,0 +1,32 @@
+.container {
+    max-width: 100%; /* Limita a largura do container à largura da tela */
+  }
+  
+  .card {
+    /* Seus estilos personalizados para os cartões */
+  }
+  
+  @media (min-width: 576px) {
+    .container {
+      max-width: 540px; /* Ajuste a largura para dispositivos pequenos */
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .container {
+      max-width: 720px; /* Ajuste a largura para dispositivos médios */
+    }
+  }
+  
+  @media (min-width: 992px) {
+    .container {
+      max-width: 960px; /* Ajuste a largura para dispositivos grandes */
+    }
+  }
+  
+  @media (min-width: 1200px) {
+    .container {
+      max-width: 1140px; /* Ajuste a largura para dispositivos extra grandes */
+    }
+  }
+  
