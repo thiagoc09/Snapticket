@@ -8,79 +8,70 @@ body, html {
     justify-content: center;
     align-items: center;
 }
-
 .login-container {
     background-color: #222;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
     text-align: center;
-    width: 300px; /* Adjust as necessary */
+    width: 300px; /* Mantém a largura original do contêiner */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Alinha os filhos ao centro horizontalmente */
+    margin: auto; /* Para centralizar verticalmente na página se desejar */
 }
+
 
 .logo {
-    margin-bottom: 20px;
+    width: 220px; /* Largura do logo aumentada */
+    height: auto; /* Altura ajustada automaticamente para manter proporções */
+    display: block; /* Garante que a imagem seja centralizada horizontalmente */
+    margin: 0 auto; /* Remove a margem superior e inferior, centraliza horizontalmente */
 }
-
 input[type=email],
 input[type=password] {
-    width: 100%;
+    width: calc(100% - 20px); /* Ajusta a largura considerando o padding */
     padding: 12px 10px;
-    margin-bottom: 15px;
-    border-radius: 5px;
+    margin-bottom: 10px; /* Espaço entre os elementos */
     border: none;
-    background: #333;
+    border-radius: 5px;
+    background-color: #333;
     color: white;
-}
-
-input::placeholder {
-    color: #bbb;
 }
 
 .buttons {
+    width: 100%; /* Garante que o contêiner dos botões tenha a largura total */
     display: flex;
-    justify-content: space-between;
-    gap: 10px; /* Creates space between the buttons */
+    justify-content: space-between; /* Espaça os botões igualmente */
 }
 
 button {
-    width: calc(50% - 5px); /* Adjust the width as necessary */
-    padding: 12px 10px;
-    border: none;
+    padding: 12px 0px; /* Padding vertical */
+    width: 48%; /* Aproximadamente metade da largura para cada botão, ajuste conforme a necessidade */
     border-radius: 5px;
+    border: none;
     cursor: pointer;
     font-size: 16px;
     color: white;
-    transition-duration: 0.4s; /* Transition for hover effect */
+    background-color: #4CAF50; /* Exemplo de cor para o botão de cadastro */
 }
 
-/* Style for the access button */
-.btn-acessar {
-    background-color: #0d6efd;
+button.btn-acessar {
+    background-color: #0d6efd; /* Cor do botão Acessar */
 }
 
-.btn-acessar:hover {
-    background-color: #0b5ed7;
+button:hover {
+    opacity: 0.9; /* Efeito ao passar o mouse por cima do botão */
+}
+.organizador-frase  {
+    color: GRAY; /* Mantém a cor branca do link */
+    display: block; /* Ocupa a linha inteira */
+    margin-top: 20px; /* Espaço acima do link */
 }
 
-/* Style for the registration button */
-.btn-cadastro {
-    background-color: #28a745; /* Green */
-}
-
-.btn-cadastro:hover {
-    background-color: #218838;
-}
-
-/* Style for the organizer's phrase */
+/* Ajuste da frase para organizadores de eventos */
 .organizador-frase a {
-    color: white; /* Text color */
-    font-weight: bold; /* Bold for style matching */
-    display: block; /* Ensures the link is on its own line */
-    margin-top: 10px; /* Margin at the top */
-    text-decoration: none; /* No underline */
-}
-
-.organizador-frase a:hover {
-    text-decoration: underline; /* Underline on hover */
+    color: rgb(196, 190, 190); /* Mantém a cor branca do link */
+    display: block; /* Ocupa a linha inteira */
+    margin-top: 10px; /* Espaço acima do link */
 }

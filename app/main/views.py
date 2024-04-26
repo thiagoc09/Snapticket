@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from . import main
 from .. import db
-from ..models import Usuario, Evento
+from ..models import Usuario, Evento, ImagemEvento
 import os
 from datetime import datetime
 from flask_login import login_user, logout_user, login_required, LoginManager
@@ -110,44 +110,57 @@ def register():
     # Este return será executado se o método for GET
     return render_template('register.html')
 
+
 @main.route('/cadastro_evento', methods=['GET', 'POST'])
 def cadastro_evento():
     if request.method == 'POST':
-        nome_evento = request.form.get('nome_evento')
-        data_evento_str = request.form.get('data_evento')
-        localizacao = request.form.get('localizacao')
-        descricao = request.form.get('descricao')
+        nome_evento = request.form['nome_evento']
+        data_evento_str = request.form['data_evento']
+        localizacao = request.form['localizacao']
+        descricao = request.form['descricao']
 
+        # Convertendo a string de data para um objeto date
         try:
             data_evento = datetime.strptime(data_evento_str, '%Y-%m-%d').date()
         except ValueError:
             flash('Formato de data inválido.')
-            return redirect(url_for('main.cadastro_evento'))
+            return redirect(url_for('cadastro_evento'))
 
-        foto_capa = request.files.get('foto_capa')
-        if foto_capa and allowed_file(foto_capa.filename):
-            filename_capa = secure_filename(foto_capa.filename)
-            # Salva a imagem na pasta correta
-            foto_capa.save(os.path.join(current_app.config['EVENT_COVERS_FOLDER'], filename_capa))
-            # Salva apenas o nome do arquivo para referência no banco de dados
-            foto_capa_db_path = os.path.join('uploads', 'event_covers', filename_capa).replace('\\', '/')
-
-        else:
-            # Use um caminho relativo para a imagem padrão
-            foto_capa_db_path = 'uploads/event_covers/default_cover.jpg'  # Supondo que você tem uma imagem padrão nomeada 'default_cover.jpg'
-
-
+        # Instanciando um novo objeto Evento
         novo_evento = Evento(
             nome_evento=nome_evento,
             data_evento=data_evento,
             localizacao=localizacao,
-            descricao=descricao,
-            foto_capa=foto_capa_db_path
+            descricao=descricao
         )
-        
         db.session.add(novo_evento)
+        db.session.commit()  # Commit para obter o ID do evento
+
+        # Salvando a foto de capa
+        foto_capa = request.files.get('foto_capa')
+
+        if foto_capa:
+            foto_capa_filename = secure_filename(foto_capa.filename)
+            foto_capa_path = os.path.join(current_app.config['EVENT_COVERS_FOLDER'], foto_capa_filename)
+            foto_capa.save(os.path.join('app', 'static', foto_capa_path))
+            novo_evento.foto_capa = foto_capa_path  # Salva apenas o caminho relativo
+
+
+        # Salvando as fotos do evento
+        fotos_evento = request.files.getlist('fotos_evento')
+        for foto in fotos_evento:
+            if foto:
+                filename = secure_filename(foto.filename)
+                evento_folder = os.path.join(current_app.config['EVENT_IMAGES_FOLDER'], str(novo_evento.id))
+                if not os.path.exists(evento_folder):
+                    os.makedirs(evento_folder)
+                path = os.path.join(evento_folder, filename)
+                foto.save(path)
+                # Adicionando a foto do evento ao banco de dados (ajuste o nome do modelo conforme o seu)
+                imagem_evento = ImagemEvento(evento_id=novo_evento.id, caminho_imagem=path)
+                db.session.add(imagem_evento)
+
         db.session.commit()
-
+        flash('Evento cadastrado com sucesso!')
         return redirect(url_for('main.home'))
-
     return render_template('cadastro_evento.html')
