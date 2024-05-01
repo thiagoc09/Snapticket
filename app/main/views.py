@@ -138,27 +138,40 @@ def cadastro_evento():
 
         # Salvando a foto de capa
         foto_capa = request.files.get('foto_capa')
-
+        # No local onde você obtém o arquivo da foto de capa
         if foto_capa:
             foto_capa_filename = secure_filename(foto_capa.filename)
-            foto_capa_path = os.path.join(current_app.config['EVENT_COVERS_FOLDER'], foto_capa_filename)
-            foto_capa.save(os.path.join('app', 'static', foto_capa_path))
-            novo_evento.foto_capa = foto_capa_path  # Salva apenas o caminho relativo
+            # Construa o caminho onde a imagem será salva
+            foto_capa_path_fs = os.path.join(current_app.config['UPLOAD_FOLDER'], 'event_covers', foto_capa_filename)
+            # Garanta que o diretório onde a imagem será salva existe
+            os.makedirs(os.path.dirname(foto_capa_path_fs), exist_ok=True)
+            # Salve a imagem
+            foto_capa.save(foto_capa_path_fs)
+            # Construa o caminho relativo para salvar no banco de dados
+            foto_capa_path_db = os.path.join('uploads', 'event_covers', foto_capa_filename)
+            print(foto_capa_path_db)
+            foto_capa_path_db_1 = foto_capa_path_db.replace('\\', '/')
 
-
-        # Salvando as fotos do evento
+            # Salve o caminho relativo no banco de dados
+            novo_evento.foto_capa = foto_capa_path_db_1
+            
+        # Quando salvar as fotos do evento
         fotos_evento = request.files.getlist('fotos_evento')
         for foto in fotos_evento:
             if foto:
                 filename = secure_filename(foto.filename)
-                evento_folder = os.path.join(current_app.config['EVENT_IMAGES_FOLDER'], str(novo_evento.id))
-                if not os.path.exists(evento_folder):
-                    os.makedirs(evento_folder)
-                path = os.path.join(evento_folder, filename)
-                foto.save(path)
-                # Adicionando a foto do evento ao banco de dados (ajuste o nome do modelo conforme o seu)
-                imagem_evento = ImagemEvento(evento_id=novo_evento.id, caminho_imagem=path)
+                # Cria o caminho relativo onde a imagem será salva
+                evento_folder_rel_path = os.path.join('uploads', 'event_images', str(novo_evento.id))
+                evento_folder_full_path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'event_images', str(novo_evento.id))
+                if not os.path.exists(evento_folder_full_path):
+                    os.makedirs(evento_folder_full_path)
+                foto.save(os.path.join(evento_folder_full_path, filename))
+                # Salva apenas o caminho relativo no banco de dados
+                imagem_evento = ImagemEvento(evento_id=novo_evento.id, caminho_imagem=os.path.join(evento_folder_rel_path, filename))
                 db.session.add(imagem_evento)
+
+
+
 
         db.session.commit()
         flash('Evento cadastrado com sucesso!')

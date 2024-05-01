@@ -9,33 +9,30 @@
 </head>
 <body>
 
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">Eventos</h2>
-        <div class="row">
-          {% for evento in eventos %}
-            <div class="col-md-4 mb-4"> <!-- Colunas Bootstrap responsivas -->
-              <div class="event-card">
-                <div class="event-image" style="background-image: url('{{ url_for('static', filename=evento.foto_capa) }}');">
-                    
-                  <!-- Imagem aqui -->
-                </div>
-                <div class="event-info">
-                  <h3>{{ evento.nome_evento }}</h3>
-                  <p>{{ evento.descricao }}</p>
-                  <span class="text-muted">{{ evento.data_evento.strftime('%d/%m/%Y') }}</span>
-                </div>
-              </div>
-            </div>
-          {% endfor %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Eventos</h2>
+    <div class="row">
+        {% for evento in eventos %}
+        <div class="col-md-4 mb-4">
+          <div class="card event-card">
+            {% if evento.foto_capa %}
+              <img src="{{ url_for('static', filename=evento.foto_capa.replace('\\', '/')) }}" class="card-img-top event-image" alt="Foto de capa do evento">
+            {% else %}
+              <img src="{{ url_for('static', filename=current_app.config['DEFAULT_EVENT_COVER'].replace('\\','/')) }}" class="card-img-top event-image" alt="Imagem padrão">
+            {% endif %}
+            <!-- Restante do código -->
+          </div>
         </div>
-      </div>
+      {% endfor %}
+    </div>
+  </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <form action="{{ url_for('main.logout') }}" method="post" class="text-center mt-4">
-        <input type="submit" value="Logout" class="btn btn-danger">
-    </form>
+<form action="{{ url_for('main.logout') }}" method="post" class="text-center mt-4">
+    <input type="submit" value="Logout" class="btn btn-danger">
+</form>
 </body>
 </html>

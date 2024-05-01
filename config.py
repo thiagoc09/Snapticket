@@ -5,12 +5,13 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    UPLOAD_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads')
+  
+
+    UPLOAD_FOLDER = os.path.join('app','static', 'uploads')
     USER_SELFIES_FOLDER = os.path.join(UPLOAD_FOLDER, 'user_selfies')
     EVENT_COVERS_FOLDER = os.path.join(UPLOAD_FOLDER, 'event_covers')
+    EVENT_IMAGES_FOLDER = os.path.join(UPLOAD_FOLDER, 'event_images')
     DEFAULT_EVENT_COVER = os.path.join('images', 'eventos', 'default_cover.jpg')
-    EVENT_IMAGES_FOLDER = os.path.join(basedir, 'app', 'static', 'uploads', 'event_images')
-
 
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'snapticket'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///' + os.path.join(basedir, 'app.db')
