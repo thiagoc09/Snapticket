@@ -20,7 +20,11 @@
             {% else %}
               <img src="{{ url_for('static', filename=current_app.config['DEFAULT_EVENT_COVER'].replace('\\','/')) }}" class="card-img-top event-image" alt="Imagem padrão">
             {% endif %}
-            <!-- Restante do código -->
+            <div class="card-body event-info">
+              <h3 class="card-title">{{ evento.nome_evento }}</h3>
+              <p class="card-text">{{ evento.descricao }}</p>
+              <span class="text-muted">{{ evento.data_evento.strftime('%d/%m/%Y') }}</span>
+            </div>
           </div>
         </div>
       {% endfor %}
