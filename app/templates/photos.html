@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Fotos do Evento</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1>Fotos do Evento</h1>
+    {% if photos %}
+        <div class="photos-container">
+            {% for photo in photos %}
+                <div class="photo">
+                    <img src="{{ url_for('static', filename='uploads/event_images/' ~ event_id ~ '/' ~ photo) }}" alt="Foto do Evento">
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <a href="{{ url_for('main.home') }}">Voltar para a página inicial</a>
+</body>
+</html>

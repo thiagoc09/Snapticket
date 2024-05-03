@@ -68,3 +68,25 @@ button {
 .btn-cadastro:hover {
     background-color: #45a049;
 }
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f4f4f4;
+}
+
+.photos-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.photo {
+    flex: 0 1 300px; /* Flex item can grow and shrink from 300px */
+}
+
+.photo img {
+    width: 100%; /* Make the image fully responsive */
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

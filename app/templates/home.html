@@ -24,6 +24,10 @@
               <h3 class="card-title">{{ evento.nome_evento }}</h3>
               <p class="card-text">{{ evento.descricao }}</p>
               <span class="text-muted">{{ evento.data_evento.strftime('%d/%m/%Y') }}</span>
+              <a href="{{ url_for('main.view_photos', event_id=evento.id, user_id=current_user.id) }}" class="btn btn-primary">Ver Fotos</a>
+              
+
+
             </div>
           </div>
         </div>

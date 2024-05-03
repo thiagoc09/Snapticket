@@ -6,7 +6,10 @@ from .. import db
 from ..models import Usuario, Evento, ImagemEvento
 import os
 from datetime import datetime
-from flask_login import login_user, logout_user, login_required, LoginManager
+from flask_login import login_user, logout_user, login_required, LoginManager, current_user
+from app.face_recognition import compare_faces, load_image_bytes  # Importando as funções corretamente
+
+
 
 login_manager = LoginManager()
 @login_manager.user_loader
@@ -28,7 +31,6 @@ def home():
         if not evento.foto_capa:
             evento.foto_capa = current_app.config['DEFAULT_EVENT_COVER']  # Caminho da imagem padrão
     return render_template('home.html', eventos=eventos)
-
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -38,23 +40,20 @@ def login():
         usuario = Usuario.query.filter_by(email=email).first()
 
         if usuario and check_password_hash(usuario.senha_hash, senha):
-            session['logged_in'] = True  # Define a sessão como logada
+            login_user(usuario)  # Utiliza Flask-Login para gerenciar a sessão
             return redirect(url_for('main.home'))
         else:
             flash('E-mail ou senha incorretos')
             return render_template('login.html')
 
-    # Certifica-se de limpar o estado da sessão ao carregar a página de login
-    session.pop('logged_in', None)
     return render_template('login.html')
 
-@main.route('/logout', methods=['GET', 'POST'])
+@main.route('/logout', methods=['GET'])
 @login_required
 def logout():
     logout_user()
     flash('Você foi deslogado com sucesso.')
     return redirect(url_for('main.login'))
-
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -65,51 +64,46 @@ def register():
         cpf = request.form.get('cpf')
         senha = request.form.get('senha')
         
-        # Verifica se a senha foi fornecida
         if not senha:
             flash('Senha é obrigatória.')
             return redirect(url_for('main.register'))
         
-        # Verifica se o email já está cadastrado
         if Usuario.query.filter_by(email=email).first():
             flash('Este email já está cadastrado.')
             return redirect(url_for('main.register'))
 
-        selfie_path = None
-       
-           # Código para registro de usuário
-        selfie = request.files.get('selfie')
-        if selfie and allowed_file(selfie.filename):
-            filename = secure_filename(selfie.filename)
-            selfie_path = os.path.join(current_app.config['USER_SELFIES_FOLDER'], filename)
-            selfie.save(selfie_path)
-        else:
-            flash('Tipo de arquivo não permitido para selfie.')            
-            return redirect(url_for('main.register'))
-        
-        # Criar novo usuário e salvar no banco de dados
+        # Criar novo usuário e tentar salvar no banco de dados
         novo_usuario = Usuario(
             nome=nome,
             email=email,
             telefone=telefone,
             cpf=cpf,
-            senha_hash=generate_password_hash(senha),  # Usando hash novamente
-            caminho_selfie=selfie_path
+            senha_hash=generate_password_hash(senha)  # Usando hash da senha
         )
-        
         db.session.add(novo_usuario)
+        
         try:
-            db.session.commit()
+            db.session.commit()  # Salvar usuário para garantir que temos um user_id
         except Exception as e:
             db.session.rollback()
             flash('Erro ao registrar usuário. Por favor, tente novamente.')
             return redirect(url_for('main.register'))
+
+        # Processar o upload da selfie após o usuário ser salvo
+        selfie = request.files.get('selfie')
+        if selfie and allowed_file(selfie.filename):
+            filename = secure_filename(f'{novo_usuario.id}.jpg')  # Nome do arquivo como ID do usuário
+            selfie_path = os.path.join(current_app.config['USER_SELFIES_FOLDER'], filename)
+            selfie.save(selfie_path)
+            novo_usuario.caminho_selfie = selfie_path  # Atualizar o caminho da selfie no banco de dados
+            db.session.commit()
+        else:
+            flash('Tipo de arquivo não permitido para selfie.')
+            return redirect(url_for('main.register'))
         
         return redirect(url_for('main.login'))
     
-    # Este return será executado se o método for GET
     return render_template('register.html')
-
 
 @main.route('/cadastro_evento', methods=['GET', 'POST'])
 def cadastro_evento():
@@ -177,3 +171,33 @@ def cadastro_evento():
         flash('Evento cadastrado com sucesso!')
         return redirect(url_for('main.home'))
     return render_template('cadastro_evento.html')
+
+@main.route('/view_photos/<int:event_id>')
+def view_photos(event_id):
+    user_id = request.args.get("user_id", None)  # Agora pegando user_id com um default None se não for passado
+    print("User ID:", user_id)  # Debug: imprimir o user_id
+    user_selfie_path = f'app/static/uploads/user_selfies/{user_id}.jpg'
+    event_photos_directory = f'app/static/uploads/event_images/{event_id}'
+
+    print("User Selfie Path:", user_selfie_path)  # Debug: imprimir o caminho da selfie
+    print("Event Photos Directory:", event_photos_directory)  # Debug: imprimir o diretório de fotos do evento
+
+    if not os.path.exists(user_selfie_path):
+        flash('Selfie do usuário não encontrada.', 'error')
+        return redirect(url_for('main.home'))
+
+    user_selfie_data = load_image_bytes(user_selfie_path)
+
+    matches = []
+    for photo_name in os.listdir(event_photos_directory):
+        if photo_name.lower().endswith(('.png', '.jpg', '.jpeg')):
+            photo_path = os.path.join(event_photos_directory, photo_name)
+            photo_data = load_image_bytes(photo_path)
+            if compare_faces(user_selfie_data, photo_data):
+                matches.append(photo_name)
+
+    if matches:
+        return render_template('photos.html', photos=matches, event_id=event_id)
+    else:
+        flash('Não foram encontradas fotos suas neste evento.', 'info')
+        return redirect(url_for('main.home'))
