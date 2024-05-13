@@ -7,26 +7,26 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">Fotos do Evento</h2>
-        <div class="row">
-            {% for photo in photos %}
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <!-- Certifique-se de que o caminho 'photo' já inclui o prefixo necessário, e não apenas o nome do arquivo -->
-                    <img src="{{ url_for('static', filename='uploads/event_images/' ~ photo) }}" class="card-img-top" alt="Foto do Evento">
-                    <div class="card-body">
-                        <button class="btn btn-primary">Salvar</button>
-                    </div>
+   <!-- photos.html -->
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Fotos do Evento</h2>
+    <div class="row">
+        {% for photo in photos %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ url_for('static', filename='uploads/' ~ photo) }}" class="card-img-top" alt="Foto do Evento">
+                <div class="card-body">
+                    <button class="btn btn-primary">Salvar</button>
                 </div>
             </div>
-            {% else %}
-            <div class="col-12">
-                <p>Nenhuma foto encontrada.</p>
-            </div>
-            {% endfor %}
         </div>
+        {% else %}
+        <div class="col-12">
+            <p>Nenhuma foto encontrada.</p>
+        </div>
+        {% endfor %}
     </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

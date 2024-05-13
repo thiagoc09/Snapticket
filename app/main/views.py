@@ -196,10 +196,12 @@ def cadastro_evento():
         return redirect(url_for('main.home'))
     return render_template('cadastro_evento.html')
     
+# view_photos
 @main.route('/view_photos/<int:event_id>')
 @login_required
 def view_photos(event_id):
-    user_selfie_path = f'app/static/uploads/user_selfies/{current_user.id}.jpg'
+    user_id = current_user.id
+    user_selfie_path = f'app/static/uploads/user_selfies/{user_id}.jpg'
     event_photos_directory = f'app/static/uploads/event_images/{event_id}'
 
     if not os.path.exists(user_selfie_path):
@@ -211,11 +213,9 @@ def view_photos(event_id):
 
     for photo_name in os.listdir(event_photos_directory):
         if photo_name.lower().endswith(('.png', '.jpg', '.jpeg')):
-            photo_path = os.path.join(event_photos_directory, photo_name)
-            photo_data = load_image_bytes(photo_path)
-            if compare_faces(user_selfie_data, photo_data):
-                # Armazene o caminho relativo completo para uso no template, substituindo barras invertidas
-                matches.append(os.path.join(f'event_images/{event_id}', photo_name).replace('\\', '/'))
+            photo_path = os.path.join(f'event_images/{event_id}', photo_name)  # Ajuste aqui para evitar duplicação de caminhos
+            if compare_faces(user_selfie_data, load_image_bytes(os.path.join(event_photos_directory, photo_name))):
+                matches.append(photo_path)
 
     if not matches:
         return redirect(url_for('main.home', show_modal='true'))
