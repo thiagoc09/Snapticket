@@ -1,4 +1,4 @@
-/* home.css */
+/* photos.css */
 body {
     background-color: #333;
     color: white;
@@ -20,24 +20,24 @@ body {
     justify-content: space-between;
 }
 
-.card {
-    flex: 0 1 calc(33.3% - 20px); /* Ajuste para manter três cartões por linha com espaçamento */
+.photo-card {
+    flex: 0 1 calc(33.3% - 20px); /* Ajuste para manter três fotos por linha com espaçamento */
     display: flex;
     flex-direction: column;
     margin-bottom: 20px;
     background: #222;
     border: none;
     color: white;
-    overflow: hidden; /* Impede que o conteúdo ultrapasse os limites do cartão */
+    overflow: hidden;
 }
 
-.card img {
+.photo-card img {
     width: 100%;
     height: 200px;
     object-fit: cover;
 }
 
-.card-body {
+.photo-info {
     padding: 15px;
     text-align: center;
 }
@@ -53,7 +53,7 @@ body {
 }
 
 @media (max-width: 768px) {
-    .card {
-        flex: 0 1 100%; /* Cartões ocupam 100% da largura em dispositivos móveis */
+    .photo-card {
+        flex: 0 1 100%; /* Fotos ocupam 100% da largura em dispositivos móveis */
     }
 }

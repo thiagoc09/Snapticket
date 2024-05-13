@@ -21,26 +21,48 @@ def allowed_file(filename):
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 @main.route('/')
+@login_required  # Garante que esta rota requer um usuário logado
 def home():
-    # Verifica se o usuário está logado
-    if 'logged_in' not in session or not session['logged_in']:
-        return redirect(url_for('main.login'))
+    show_modal = request.args.get('show_modal', 'false') == 'true'
     eventos = Evento.query.all()
     for evento in eventos:
         if not evento.foto_capa:
-            evento.foto_capa = current_app.config['DEFAULT_EVENT_COVER']  # Caminho da imagem padrão
-    return render_template('home.html', eventos=eventos)
+            evento.foto_capa = current_app.config['DEFAULT_EVENT_COVER']
+    return render_template('home.html', eventos=eventos, show_modal=show_modal)
+
+
+
+# @main.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         email = request.form.get('email')
+#         senha = request.form.get('senha')
+
+#         usuario = Usuario.query.filter_by(email=email).first()
+
+#         if usuario and check_password_hash(usuario.senha_hash, senha):
+#             session['logged_in'] = True  # Define a sessão como logada
+#             return redirect(url_for('main.home'))
+#         else:
+#             flash('E-mail ou senha incorretos')
+#             return render_template('login.html')
+
+#     # Certifica-se de limpar o estado da sessão ao carregar a página de login
+#     session.pop('logged_in', None)
+#     return render_template('login.html')
+
+
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('senha')
-
         usuario = Usuario.query.filter_by(email=email).first()
 
         if usuario and check_password_hash(usuario.senha_hash, senha):
-            login_user(usuario)  # Utiliza Flask-Login para gerenciar a sessão
+            login_user(usuario)  # Registra o usuário na sessão usando Flask-Login
             return redirect(url_for('main.home'))
         else:
             flash('E-mail ou senha incorretos')
@@ -48,7 +70,9 @@ def login():
 
     return render_template('login.html')
 
-@main.route('/logout', methods=['GET'])
+
+
+@main.route('/logout', methods=['GET','POST'])
 @login_required
 def logout():
     logout_user()
@@ -171,33 +195,29 @@ def cadastro_evento():
         flash('Evento cadastrado com sucesso!')
         return redirect(url_for('main.home'))
     return render_template('cadastro_evento.html')
-
+    
 @main.route('/view_photos/<int:event_id>')
+@login_required
 def view_photos(event_id):
-    user_id = request.args.get("user_id", None)  # Agora pegando user_id com um default None se não for passado
-    print("User ID:", user_id)  # Debug: imprimir o user_id
-    user_selfie_path = f'app/static/uploads/user_selfies/{user_id}.jpg'
+    user_selfie_path = f'app/static/uploads/user_selfies/{current_user.id}.jpg'
     event_photos_directory = f'app/static/uploads/event_images/{event_id}'
-
-    print("User Selfie Path:", user_selfie_path)  # Debug: imprimir o caminho da selfie
-    print("Event Photos Directory:", event_photos_directory)  # Debug: imprimir o diretório de fotos do evento
 
     if not os.path.exists(user_selfie_path):
         flash('Selfie do usuário não encontrada.', 'error')
         return redirect(url_for('main.home'))
 
     user_selfie_data = load_image_bytes(user_selfie_path)
-
     matches = []
+
     for photo_name in os.listdir(event_photos_directory):
         if photo_name.lower().endswith(('.png', '.jpg', '.jpeg')):
             photo_path = os.path.join(event_photos_directory, photo_name)
             photo_data = load_image_bytes(photo_path)
             if compare_faces(user_selfie_data, photo_data):
-                matches.append(photo_name)
+                # Armazene o caminho relativo completo para uso no template, substituindo barras invertidas
+                matches.append(os.path.join(f'event_images/{event_id}', photo_name).replace('\\', '/'))
 
-    if matches:
-        return render_template('photos.html', photos=matches, event_id=event_id)
+    if not matches:
+        return redirect(url_for('main.home', show_modal='true'))
     else:
-        flash('Não foram encontradas fotos suas neste evento.', 'info')
-        return redirect(url_for('main.home'))
+        return render_template('photos.html', photos=matches, event_id=event_id)

@@ -9,35 +9,59 @@
 </head>
 <body>
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Eventos</h2>
-    <div class="row">
+<div class="container">
+    <h2>Eventos</h2>
+    <div class="row justify-content-center">
         {% for evento in eventos %}
         <div class="col-md-4 mb-4">
-          <div class="card event-card">
+          <div class="card">
             {% if evento.foto_capa %}
-              <img src="{{ url_for('static', filename=evento.foto_capa.replace('\\', '/')) }}" class="card-img-top event-image" alt="Foto de capa do evento">
+              <img src="{{ url_for('static', filename=evento.foto_capa.replace('\\', '/')) }}" alt="Foto de capa do evento">
             {% else %}
-              <img src="{{ url_for('static', filename=current_app.config['DEFAULT_EVENT_COVER'].replace('\\','/')) }}" class="card-img-top event-image" alt="Imagem padrão">
+              <img src="{{ url_for('static', filename=current_app.config['DEFAULT_EVENT_COVER'].replace('\\','/')) }}" alt="Imagem padrão">
             {% endif %}
-            <div class="card-body event-info">
+            <div class="card-body">
               <h3 class="card-title">{{ evento.nome_evento }}</h3>
               <p class="card-text">{{ evento.descricao }}</p>
               <span class="text-muted">{{ evento.data_evento.strftime('%d/%m/%Y') }}</span>
               <a href="{{ url_for('main.view_photos', event_id=evento.id, user_id=current_user.id) }}" class="btn btn-primary">Ver Fotos</a>
-              
-
-
             </div>
           </div>
         </div>
-      {% endfor %}
+        {% endfor %}
     </div>
   </div>
+
+<!-- Modal para "Sem Fotos Disponíveis" -->
+<div class="modal fade" id="noPhotosModal" tabindex="-1" role="dialog" aria-labelledby="noPhotosModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="noPhotosModalLabel">Aviso</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Não foram encontradas fotos suas neste evento.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function() {
+    {% if show_modal %}
+        $('#noPhotosModal').modal('show');
+    {% endif %}
+});
+</script>
 
 <form action="{{ url_for('main.logout') }}" method="post" class="text-center mt-4">
     <input type="submit" value="Logout" class="btn btn-danger">
