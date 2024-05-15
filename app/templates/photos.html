@@ -8,47 +8,30 @@
 </head>
 <body>
  <!-- app/templates/photos.html -->
-<!-- app/templates/photos.html -->
-{% extends "base.html" %}
+ {% extends "base.html" %}
 
-{% block title %}Fotos do Evento - SnapTicket{% endblock %}
-
-{% block content %}
-<div class="container mt-5">
-    <h1>Fotos do Evento</h1>
-    <div class="row">
-        {% for photo in photos %}
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="{{ url_for('static', filename=photo) }}" class="card-img" alt="Foto">
-                <div class="card-img-overlay d-flex flex-column justify-content-end">
-                    <form action="{{ url_for('main.add_to_cart') }}" method="POST">
-                        <input type="hidden" name="photo_path" value="{{ photo }}">
-                        <input type="hidden" name="event_id" value="{{ event_id }}">
-                        <button type="submit" class="btn btn-success">Comprar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    <!-- Paginação -->
-    <nav aria-label="Page navigation">
-        <ul class="pagination justify-content-center">
-            {% if page > 1 %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('main.view_photos', event_id=event_id, page=page-1) }}">Anterior</a>
-            </li>
-            {% endif %}
-            {% if page * per_page < total_photos %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('main.view_photos', event_id=event_id, page=page+1) }}">Próxima</a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
-</div>
-{% endblock %}
+ {% block title %}Fotos do Evento{% endblock %}
+ 
+ {% block content %}
+ <div class="container mt-5">
+     <div class="row">
+         {% for photo in photos %}
+         <div class="col-md-4 mb-4">
+             <div class="card bg-dark text-light">
+                 <img src="{{ url_for('static', filename=photo) }}" class="card-img" alt="Foto do Evento">
+                 <div class="card-img-overlay d-flex flex-column justify-content-end">
+                     <form action="{{ url_for('main.add_to_cart') }}" method="post">
+                         <input type="hidden" name="photo_path" value="{{ photo }}">
+                         <input type="hidden" name="event_id" value="{{ event_id }}">
+                         <button type="submit" class="btn btn-primary">Comprar</button>
+                     </form>
+                 </div>
+             </div>
+         </div>
+         {% endfor %}
+     </div>
+ </div>
+ {% endblock %}
 
 </body>
 </html>
