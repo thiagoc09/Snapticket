@@ -1,79 +1,134 @@
-/* Ajustes globais */
-body, html {
-    height: 100%;
+body {
+    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    font-family: 'Poppins', sans-serif;
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f4f4;
+    padding: 0;
+    color: #fff;
 }
 
-.container {
-    max-width: 1200px; /* Define a largura máxima do container para centralizar o conteúdo */
+header .navbar-brand img {
+    height: 150px; /* Ajuste o tamanho do logo conforme necessário */
+    width: auto; /* Mantém a proporção do logo */
 }
 
-/* Estilização dos cartões de eventos */
-.card.event-card {
-    height: 100%; /* Ajuste para garantir que todos os cartões tenham a mesma altura */
+.search-section {
+    padding: 20px;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 90px; /* Aumenta a distância entre o formulário e os eventos */
+}
+
+.search-title {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: #fff; /* Cor branca */
+    font-family: 'Poppins', sans-serif; /* Tipografia mais moderna */
+    font-weight: 600;
+}
+
+.search-subtitle {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #28a745; /* Cor verde */
+    font-family: 'Poppins', sans-serif;
+}
+
+.search-form {
     display: flex;
-    flex-direction: column; /* Organiza o conteúdo do cartão em colunas */
+    justify-content: center;
+    align-items: center;
 }
 
-.card-body {
-    flex-grow: 1; /* Permite que o corpo do cartão expanda para preencher o espaço disponível */
+.search-input {
+    padding: 10px;
+    border-radius: 5px 0 0 5px;
+    border: none;
+    width: 300px;
 }
 
-/* Estilização das imagens do evento */
-.card-img-top {
-    width: 100%; /* Ajusta a largura da imagem para cobrir o cartão */
-    height: 200px; /* Altura fixa para todas as imagens */
-    object-fit: cover; /* Garante que a imagem cubra o espaço disponível sem distorcer */
+.search-button {
+    padding: 10px 20px;
+    border-radius: 0 5px 5px 0;
+    border: none;
+    background-color: #28a745;
+    color: #fff;
+    cursor: pointer;
 }
 
-@media (min-width: 768px) {
-    .row {
-        display: flex;
-        flex-wrap: wrap; /* Permite que os itens da linha se ajustem conforme o espaço */
-    }
-    .col-md-4 {
-        display: flex;
-    }
-    .card.event-card {
-        margin: 10px; /* Espaço entre os cartões */
-    }
+.search-button:hover {
+    background-color: #218838;
 }
+
 .event-card {
-    height: 400px; /* Altura fixa para todos os cartões */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Distribui o espaço internamente */
-    overflow: hidden; /* Impede que o conteúdo exceda os limites do cartão */
+    margin-top: 20px;
 }
 
-.event-image {
-    width: 100%; /* A largura cobre todo o cartão */
-    height: 200px; /* Altura fixa para imagens */
-    object-fit: cover; /* Garante que a imagem cubra o espaço, cortando o excesso */
+.card {
+    background-color: transparent;
+    border: none;
+    position: relative;
+    width: 100%;
+    max-height: 280px; /* Define a altura máxima para as imagens */
 }
 
-.card-body {
-    height: calc(100% - 200px); /* Altura ajustada automaticamente */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Espaço distribuído internamente */
+.card-img {
+    border-radius: 10px;
+    width: 100%;
+    height: 280px; /* Define uma altura fixa para as imagens */
+    object-fit: cover; /* Assegura que a imagem cobre o espaço definido */
+}
+
+.card-img-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+    border-radius: 10px;
 }
 
 .card-title {
+    font-size: 1.2em;
+    color: #fff;
     margin: 0;
 }
 
-.card-text {
-    overflow: hidden; /* Impede que o texto exceda os limites definidos */
-    text-overflow: ellipsis; /* Adiciona reticências se o texto for muito longo */
-    display: -webkit-box;
-    -webkit-line-clamp: 3; /* Limita o texto a três linhas */
-    -webkit-box-orient: vertical;
+.card-date {
+    font-size: 0.9em;
+    color: #ccc;
 }
 
-.text-muted {
-    align-self: flex-end;
-    margin: 10px 0;
+.card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.card-link:hover .card-img-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.3));
+}
+
+.card-link:hover .card-title, 
+.card-link:hover .card-date {
+    color: #fff;
+}
+
+/* Estilos para o modal */
+.modal-header {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.modal-content {
+    background-color: #2d2f31;
+    color: #fff;
+}
+
+.modal-footer .btn-secondary {
+    background-color: #444;
+    border: none;
+}
+
+.modal-footer .btn-secondary:hover {
+    background-color: #555;
 }

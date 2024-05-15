@@ -1,0 +1,59 @@
+/* photos.css */
+body {
+    background-color: #333;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 95%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px 0;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.photo-card {
+    flex: 0 1 calc(33.3% - 20px); /* Ajuste para manter três fotos por linha com espaçamento */
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    background: #222;
+    border: none;
+    color: white;
+    overflow: hidden;
+}
+
+.photo-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.photo-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+}
+
+.btn:hover {
+    background-color: #218838;
+}
+
+@media (max-width: 768px) {
+    .photo-card {
+        flex: 0 1 100%; /* Fotos ocupam 100% da largura em dispositivos móveis */
+    }
+}
