@@ -17,7 +17,7 @@
   {% block content %}
   <div class="search-section">
       <h2 class="search-title">Suas fotos com uma selfie</h2>
-      <p class="search-subtitle">Buscar eventos</p>
+      <p class="search-subtitle">Encontre seus momentos com nossa IA</p>
       <form id="search-form" class="search-form">
           <input type="text" id="search-input" name="event_name" placeholder="Digite aqui o nome do evento..." class="search-input">
           <button type="submit" class="search-button">BUSCAR</button>
@@ -26,14 +26,15 @@
   <div id="event-results" class="row">
       {% for evento in eventos %}
       <div class="col-md-4 mb-4 event-card">
-          <div class="card bg-dark text-light">
-              <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img-top" alt="Foto do Evento">
-              <div class="card-body">
-                  <h5 class="card-title">{{ evento.nome_evento }}</h5>
-                  <p class="card-date">{{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
-                  <a href="{{ url_for('main.view_photos', event_id=evento.id) }}" class="btn btn-primary">Ver Fotos</a>
+          <a href="{{ url_for('main.view_photos', event_id=evento.id) }}" class="card-link">
+              <div class="card bg-dark text-light">
+                  <div class="card-img-overlay d-flex flex-column justify-content-end">
+                      <h5 class="card-title">{{ evento.nome_evento }}</h5>
+                      <p class="card-date">{{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
+                  </div>
+                  <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img" alt="Foto do Evento">
               </div>
-          </div>
+          </a>
       </div>
       {% endfor %}
   </div>
@@ -72,14 +73,15 @@
               data.forEach(evento => {
                   const eventCard = `
                       <div class="col-md-4 mb-4 event-card">
-                          <div class="card bg-dark text-light">
-                              <img src="${evento.foto_capa}" class="card-img-top" alt="Foto do Evento">
-                              <div class="card-body">
-                                  <h5 class="card-title">${evento.nome_evento}</h5>
-                                  <p class="card-date">${new Date(evento.data_evento).toLocaleDateString()}</p>
-                                  <a href="#" class="btn btn-primary" onclick="showNoPhotosModal()">Ver Fotos</a>
+                          <a href="/view_photos/${evento.id}" class="card-link">
+                              <div class="card bg-dark text-light">
+                                  <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                      <h5 class="card-title">${evento.nome_evento}</h5>
+                                      <p class="card-date">${new Date(evento.data_evento).toLocaleDateString()}</p>
+                                  </div>
+                                  <img src="${evento.foto_capa}" class="card-img" alt="Foto do Evento">
                               </div>
-                          </div>
+                          </a>
                       </div>
                   `;
                   eventResults.innerHTML += eventCard;

@@ -64,42 +64,53 @@ header .navbar-brand img {
 }
 
 .card {
-    background-color: #2d2f31;
-    border: 1px solid #444;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-.card img {
+    background-color: transparent;
+    border: none;
+    position: relative;
     width: 100%;
-    height: auto;
+    max-height: 300px; /* Define a altura máxima para as imagens */
 }
 
-.card-body {
+.card-img {
+    border-radius: 10px;
+    width: 100%;
+    height: 300px; /* Define uma altura fixa para as imagens */
+    object-fit: cover; /* Assegura que a imagem cobre o espaço definido */
+}
+
+.card-img-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     padding: 15px;
-    text-align: center;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+    border-radius: 10px;
 }
 
 .card-title {
     font-size: 1.2em;
-    margin-bottom: 5px;
     color: #fff;
+    margin: 0;
 }
 
 .card-date {
-    font-size: 1em;
+    font-size: 0.9em;
     color: #ccc;
 }
 
-.btn-primary {
-    background-color: #28a745;
-    border: none;
+.card-link {
+    text-decoration: none;
+    color: inherit;
 }
 
-.btn-primary:hover {
-    background-color: #218838;
+.card-link:hover .card-img-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.3));
+}
+
+.card-link:hover .card-title, 
+.card-link:hover .card-date {
+    color: #fff;
 }
 
 /* Estilos para o modal */
