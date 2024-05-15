@@ -196,10 +196,20 @@ def cadastro_evento():
         return redirect(url_for('main.home'))
     return render_template('cadastro_evento.html')
     
-# view_photos
+import time
+import logging
+
+# Configuração básica de logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 @main.route('/view_photos/<int:event_id>')
 @login_required
 def view_photos(event_id):
+    start_time = time.time()
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = 12  # Número de fotos por página
+
     user_id = current_user.id
     user_selfie_path = f'app/static/uploads/user_selfies/{user_id}.jpg'
     event_photos_directory = f'app/static/uploads/event_images/{event_id}'
@@ -213,11 +223,26 @@ def view_photos(event_id):
 
     for photo_name in os.listdir(event_photos_directory):
         if photo_name.lower().endswith(('.png', '.jpg', '.jpeg')):
-            photo_path = os.path.join(f'event_images/{event_id}', photo_name)  # Ajuste aqui para evitar duplicação de caminhos
+            photo_path = os.path.join(f'event_images/{event_id}', photo_name)
             if compare_faces(user_selfie_data, load_image_bytes(os.path.join(event_photos_directory, photo_name))):
                 matches.append(os.path.join('uploads/event_images', str(event_id), photo_name).replace('\\', '/'))
 
     if not matches:
+        logging.info(f'No matches found for event {event_id}')
         return redirect(url_for('main.home', show_modal='true'))
     else:
-        return render_template('photos.html', photos=matches, event_id=event_id)
+        total_photos = len(matches)
+        matches = matches[(page - 1) * per_page: page * per_page]
+        
+        elapsed_time = time.time() - start_time
+        logging.info(f'tempo gasto para processar view_photos pelo evento {event_id}: {elapsed_time:.2f} seconds')
+        
+        return render_template('photos.html', photos=matches, event_id=event_id, page=page, total_photos=total_photos, per_page=per_page)
+
+
+@main.route('/cart')
+@login_required
+def cart():
+    user_id = current_user.id
+    cart_items = Cart.query.filter_by(user_id=user_id).all()
+    return render_template('cart.html', cart_items=cart_items)

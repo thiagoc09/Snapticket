@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Carrinho</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+    {% extends "base.html" %}
+    {% block content %}
+    <h2 class="text-center mb-4 text-light">Meu Carrinho</h2>
+    <div class="row">
+        {% for photo in photos %}
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark text-light">
+                <img src="{{ url_for('static', filename=photo) }}" class="card-img-top" alt="Foto no Carrinho">
+                <div class="card-body">
+                    <h5 class="card-title">Foto no Carrinho</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endblock %}
+</body>
+</html>

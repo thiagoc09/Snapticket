@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
 </head>
 <body>
   {% extends "base.html" %}
@@ -25,7 +26,7 @@
   <div id="event-results" class="row">
       {% for evento in eventos %}
       <div class="col-md-4 mb-4 event-card">
-          <a href="{{ url_for('main.view_photos', event_id=evento.id) }}" class="card-link">
+          <a href="{{ url_for('main.view_photos', event_id=evento.id) }}" class="card-link event-link">
               <div class="card bg-dark text-light">
                   <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img" alt="Foto do Evento">
                   <div class="card-img-overlay d-flex flex-column justify-content-end">
@@ -58,9 +59,17 @@
     </div>
   </div>
 
-  {% endblock %}
-
+  <!-- Tela de loading -->
+  <div id="loading" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+  
   <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var loadingOverlay = document.getElementById("loading");
+        loadingOverlay.style.display = "none";  // Esconder a tela de loading
+    });
+
     document.getElementById('search-form').addEventListener('submit', function(event) {
       event.preventDefault();
       const searchInput = document.getElementById('search-input').value;
@@ -76,7 +85,7 @@
                   data.forEach(evento => {
                       const eventCard = `
                           <div class="col-md-4 mb-4 event-card">
-                              <a href="/view_photos/${evento.id}" class="card-link">
+                              <a href="/view_photos/${evento.id}" class="card-link event-link">
                                   <div class="card bg-dark text-light">
                                       <img src="${evento.foto_capa}" class="card-img" alt="Foto do Evento">
                                       <div class="card-img-overlay d-flex flex-column justify-content-end">
@@ -89,14 +98,32 @@
                       `;
                       eventResults.innerHTML += eventCard;
                   });
+
+                  // Adicionar evento de clique para exibir o loading nos novos links
+                  const eventLinks = document.querySelectorAll('.event-link');
+                  eventLinks.forEach(function(link) {
+                      link.addEventListener('click', function() {
+                          loadingOverlay.style.display = 'flex';  // Mostrar a tela de loading
+                      });
+                  });
               }
           })
           .catch(error => console.error('Error:', error));
-  });
-</script>
+    });
+
+    // Adicionar evento de clique para exibir o loading nos links de evento iniciais
+    const eventLinks = document.querySelectorAll('.event-link');
+    eventLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            var loadingOverlay = document.getElementById("loading");
+            loadingOverlay.style.display = 'flex';  // Mostrar a tela de loading
+        });
+    });
+  </script>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  {% endblock %}
 </body>
 </html>

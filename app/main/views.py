@@ -5,12 +5,20 @@ from . import main
 from .. import db
 from ..models import Usuario, Evento, ImagemEvento
 import os
+import time
+import logging
+
 
 from datetime import datetime
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
 
 from app.face_recognition import compare_faces, load_image_bytes  # Importando as funções corretamente
 from PIL import Image
+
+
+# Configuração básica de logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 # Configuração do LoginManager
 login_manager = LoginManager()
@@ -51,14 +59,12 @@ def add_image_watermark(input_image_path, watermark_image_path, output_image_pat
 @main.route('/')
 @login_required
 def home():
-    show_modal = request.args.get('show_modal')
     event_name = request.args.get('event_name')
-
     if event_name:
-        eventos = Evento.query.filter(Evento.nome_evento.ilike(f"%{event_name}%")).all()
+        eventos = Evento.query.filter(Evento.nome_evento.ilike(f'%{event_name}%')).all()
     else:
         eventos = Evento.query.all()
-        
+    show_modal = request.args.get('show_modal', False)
     return render_template('home.html', eventos=eventos, show_modal=show_modal)
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -77,12 +83,13 @@ def login():
 
     return render_template('login.html')
 
-@main.route('/logout', methods=['GET', 'POST'])
+
+@main.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash('Você foi deslogado com sucesso.')
-    return redirect(url_for('main.login'))
+    flash('Você foi deslogado com sucesso.', 'success')
+    return redirect(url_for('main.home'))
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
@@ -187,53 +194,6 @@ def cadastro_evento():
         return redirect(url_for('main.home'))
     return render_template('cadastro_evento.html')
 
-from flask import session
-
-@main.route('/view_photos/<int:event_id>')
-@login_required
-def view_photos(event_id):
-    user_id = current_user.id
-    user_selfie_path = f'app/static/uploads/user_selfies/{user_id}.jpg'
-    event_photos_directory = f'app/static/uploads/event_images/{event_id}'
-
-    if not os.path.exists(user_selfie_path):
-        flash('Selfie do usuário não encontrada.', 'error')
-        return redirect(url_for('main.home'))
-
-    user_selfie_data = load_image_bytes(user_selfie_path)
-    matches = []
-    
-    # Inicializa o conjunto de fotos processadas na sessão se não existir
-    if 'processed_photos' not in session:
-        session['processed_photos'] = set()
-    
-    processed_photos = set(session['processed_photos'])
-
-    for photo_name in os.listdir(event_photos_directory):
-        if photo_name.lower().endswith(('.png', '.jpg', '.jpeg')):
-            photo_path = os.path.join(event_photos_directory, photo_name)
-            if photo_path not in processed_photos and compare_faces(user_selfie_data, load_image_bytes(photo_path)):
-                # Adiciona marca d'água e salva a imagem
-                watermarked_path = os.path.join('uploads/event_images', str(event_id), f'wm_{photo_name}')
-                os.makedirs(os.path.dirname(os.path.join('app/static', watermarked_path)), exist_ok=True)
-                add_image_watermark(photo_path, 'app/static/images/logo.png', os.path.join('app/static', watermarked_path), position=(10, 10), opacity=150)
-                matches.append(watermarked_path.replace('\\', '/'))
-                processed_photos.add(photo_path)  # Marca a foto como processada
-
-    # Atualiza a sessão com as fotos processadas
-    session['processed_photos'] = list(processed_photos)
-
-    if not matches:
-        return redirect(url_for('main.home', show_modal='true'))
-    else:
-        return render_template('photos.html', photos=matches, event_id=event_id)
-
-@main.route('/my_photos')
-@login_required
-def my_photos():
-    # Lógica para buscar as fotos salvas pelo usuário
-    return render_template('my_photos.html')
-
 @main.route('/search_events', methods=['GET'])
 @login_required
 def search_events():
@@ -246,3 +206,64 @@ def search_events():
         "foto_capa": url_for('static', filename=evento.foto_capa)
     } for evento in eventos]
     return jsonify(results)
+
+
+@main.route('/my_photos')
+@login_required
+def my_photos():
+    user_id = current_user.id
+    user_photos = session.get(f'user_{user_id}_photos', [])
+    return render_template('my_photos.html', photos=user_photos)
+
+@main.route('/add_to_cart', methods=['POST'])
+@login_required
+def add_to_cart():
+    photo_path = request.form.get('photo_path')
+    event_id = request.form.get('event_id')
+    if photo_path:
+        user_id = current_user.id
+        cart_photos = session.get(f'user_{user_id}_cart', [])
+        if photo_path not in cart_photos:
+            cart_photos.append(photo_path)
+            session[f'user_{user_id}_cart'] = cart_photos
+            flash('Foto adicionada ao carrinho com sucesso.')
+        else:
+            flash('Esta foto já está no carrinho.')
+    return redirect(url_for('main.view_photos', event_id=event_id))
+
+@main.route('/cart')
+@login_required
+def cart():
+    user_id = current_user.id
+    cart_photos = session.get(f'user_{user_id}_cart', [])
+    return render_template('cart.html', photos=cart_photos)
+
+@main.route('/view_photos/<int:event_id>')
+@login_required
+def view_photos(event_id):
+    page = request.args.get('page', 1, type=int)
+    per_page = 12  # Número de fotos por página
+
+    user_id = current_user.id
+    user_selfie_path = f'app/static/uploads/user_selfies/{user_id}.jpg'
+    event_photos_directory = f'app/static/uploads/event_images/{event_id}'
+
+    if not os.path.exists(user_selfie_path):
+        flash('Selfie do usuário não encontrada.', 'error')
+        return redirect(url_for('main.home'))
+
+    user_selfie_data = load_image_bytes(user_selfie_path)
+    matches = []
+
+    for photo_name in os.listdir(event_photos_directory):
+        if photo_name.lower().endswith(('.png', '.jpg', '.jpeg')):
+            photo_path = os.path.join(f'event_images/{event_id}', photo_name)
+            if compare_faces(user_selfie_data, load_image_bytes(os.path.join(event_photos_directory, photo_name))):
+                matches.append(os.path.join('uploads/event_images', str(event_id), photo_name).replace('\\', '/'))
+
+    if not matches:
+        return redirect(url_for('main.home', show_modal='true'))
+    else:
+        total_photos = len(matches)
+        matches = matches[(page - 1) * per_page: page * per_page]
+        return render_template('photos.html', photos=matches, event_id=event_id, page=page, total_photos=total_photos, per_page=per_page)
