@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Eventos</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
 </head>
 <body>
-
   {% extends "base.html" %}
 
   {% block title %}Home - SnapTicket{% endblock %}
@@ -28,17 +27,16 @@
       <div class="col-md-4 mb-4 event-card">
           <a href="{{ url_for('main.view_photos', event_id=evento.id) }}" class="card-link">
               <div class="card bg-dark text-light">
+                  <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img" alt="Foto do Evento">
                   <div class="card-img-overlay d-flex flex-column justify-content-end">
                       <h5 class="card-title">{{ evento.nome_evento }}</h5>
                       <p class="card-date">{{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
                   </div>
-                  <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img" alt="Foto do Evento">
               </div>
           </a>
       </div>
       {% endfor %}
   </div>
-  {% endblock %}
 
   <!-- Modal para "Sem Fotos Disponíveis" -->
   <div class="modal fade" id="noPhotosModal" tabindex="-1" role="dialog" aria-labelledby="noPhotosModalLabel" aria-hidden="true">
@@ -60,44 +58,45 @@
     </div>
   </div>
 
+  {% endblock %}
+
   <script>
-  document.getElementById('search-form').addEventListener('submit', function(event) {
+    document.getElementById('search-form').addEventListener('submit', function(event) {
       event.preventDefault();
       const searchInput = document.getElementById('search-input').value;
       
-      fetch(`/search_events?event_name=${searchInput}`)
+      fetch(`/search_events?event_name=${encodeURIComponent(searchInput)}`)
           .then(response => response.json())
           .then(data => {
               const eventResults = document.getElementById('event-results');
               eventResults.innerHTML = '';
-              data.forEach(evento => {
-                  const eventCard = `
-                      <div class="col-md-4 mb-4 event-card">
-                          <a href="/view_photos/${evento.id}" class="card-link">
-                              <div class="card bg-dark text-light">
-                                  <div class="card-img-overlay d-flex flex-column justify-content-end">
-                                      <h5 class="card-title">${evento.nome_evento}</h5>
-                                      <p class="card-date">${new Date(evento.data_evento).toLocaleDateString()}</p>
+              if (data.length === 0) {
+                  $('#noPhotosModal').modal('show');
+              } else {
+                  data.forEach(evento => {
+                      const eventCard = `
+                          <div class="col-md-4 mb-4 event-card">
+                              <a href="/view_photos/${evento.id}" class="card-link">
+                                  <div class="card bg-dark text-light">
+                                      <img src="${evento.foto_capa}" class="card-img" alt="Foto do Evento">
+                                      <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                          <h5 class="card-title">${evento.nome_evento}</h5>
+                                          <p class="card-date">${new Date(evento.data_evento).toLocaleDateString('pt-BR')}</p>
+                                      </div>
                                   </div>
-                                  <img src="${evento.foto_capa}" class="card-img" alt="Foto do Evento">
-                              </div>
-                          </a>
-                      </div>
-                  `;
-                  eventResults.innerHTML += eventCard;
-              });
+                              </a>
+                          </div>
+                      `;
+                      eventResults.innerHTML += eventCard;
+                  });
+              }
           })
           .catch(error => console.error('Error:', error));
   });
-
-  function showNoPhotosModal() {
-      $('#noPhotosModal').modal('show');
-  }
-  </script>
+</script>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 </body>
 </html>

@@ -49,13 +49,16 @@ def add_image_watermark(input_image_path, watermark_image_path, output_image_pat
     watermarked_image.save(output_image_path, "JPEG")
 
 @main.route('/')
-@login_required  # Garante que esta rota requer um usuário logado
+@login_required
 def home():
-    show_modal = request.args.get('show_modal', 'false') == 'true'
-    eventos = Evento.query.all()
-    for evento in eventos:
-        if not evento.foto_capa:
-            evento.foto_capa = current_app.config['DEFAULT_EVENT_COVER']
+    show_modal = request.args.get('show_modal')
+    event_name = request.args.get('event_name')
+
+    if event_name:
+        eventos = Evento.query.filter(Evento.nome_evento.ilike(f"%{event_name}%")).all()
+    else:
+        eventos = Evento.query.all()
+        
     return render_template('home.html', eventos=eventos, show_modal=show_modal)
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -234,12 +237,12 @@ def my_photos():
 @main.route('/search_events', methods=['GET'])
 @login_required
 def search_events():
-    event_name = request.args.get('event_name', '')
-    eventos = Evento.query.filter(Evento.nome_evento.ilike(f'%{event_name}%')).all()
-    eventos_data = [{
-        'id': evento.id,
-        'nome_evento': evento.nome_evento,
-        'descricao': evento.descricao,
-        'foto_capa': url_for('static', filename=evento.foto_capa)
+    event_name = request.args.get('event_name')
+    eventos = Evento.query.filter(Evento.nome_evento.ilike(f"%{event_name}%")).all()
+    results = [{
+        "id": evento.id,
+        "nome_evento": evento.nome_evento,
+        "data_evento": evento.data_evento.strftime('%Y-%m-%d'),
+        "foto_capa": url_for('static', filename=evento.foto_capa)
     } for evento in eventos]
-    return jsonify(eventos_data)
+    return jsonify(results)
