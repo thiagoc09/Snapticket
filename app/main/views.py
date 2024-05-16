@@ -24,19 +24,25 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def add_image_watermark(input_image_path, watermark_image_path, output_image_path, position=(0, 0), opacity=128):
-    base_image = Image.open(input_image_path).convert("RGBA")
-    watermark = Image.open(watermark_image_path).convert("RGBA")
-    ratio = min(base_image.size[0] / 4 / watermark.size[0], base_image.size[1] / 4 / watermark.size[1])
-    new_size = (int(watermark.size[0] * ratio), int(watermark.size[1] * ratio))
-    watermark = watermark.resize(new_size, Image.LANCZOS)
-    watermark.putalpha(opacity)
-    transparent = Image.new("RGBA", base_image.size, (0, 0, 0, 0))
-    for y in range(0, base_image.size[1], watermark.size[1]):
-        for x in range(0, base_image.size[0], watermark.size[0]):
-            transparent.paste(watermark, (x, y), watermark)
-    watermarked_image = Image.alpha_composite(base_image, transparent)
-    watermarked_image = watermarked_image.convert("RGB")
-    watermarked_image.save(output_image_path, "JPEG")
+    if not os.path.exists(output_image_path):
+        base_image = Image.open(input_image_path).convert("RGBA")
+        watermark = Image.open(watermark_image_path).convert("RGBA")
+
+        ratio = min(base_image.size[0] / 4 / watermark.size[0], base_image.size[1] / 4 / watermark.size[1])
+        new_size = (int(watermark.size[0] * ratio), int(watermark.size[1] * ratio))
+        watermark = watermark.resize(new_size, Image.LANCZOS)
+
+        watermark.putalpha(opacity)
+
+        transparent = Image.new("RGBA", base_image.size, (0, 0, 0, 0))
+        for y in range(0, base_image.size[1], watermark.size[1]):
+            for x in range(0, base_image.size[0], watermark.size[0]):
+                transparent.paste(watermark, (x, y), watermark)
+
+        watermarked_image = Image.alpha_composite(base_image, transparent)
+        watermarked_image = watermarked_image.convert("RGB")
+        watermarked_image.save(output_image_path, "JPEG")
+
 
 @main.route('/')
 @login_required
@@ -69,7 +75,11 @@ def login():
 @main.route('/logout')
 @login_required
 def logout():
+    user_id = current_user.id
+    session.pop(f'user_{user_id}_photos', None)
+    session.pop(f'user_{user_id}_processed_photos', None)
     logout_user()
+    flash('Você foi deslogado com sucesso.', 'success')
     return redirect(url_for('main.home'))
 
 @main.route('/register', methods=['GET', 'POST'])
@@ -216,18 +226,29 @@ def view_photos(event_id):
         return redirect(url_for('main.home'))
 
     user_selfie_data = load_image_bytes(user_selfie_path)
-    matches = []
+    matches = session.get(f'user_{user_id}_photos', {})
+    if not isinstance(matches, dict):
+        matches = {}  # Garantir que matches seja um dicionário
+
+    processed_photos = session.get(f'user_{user_id}_processed_photos', set())
+    if not isinstance(processed_photos, set):
+        processed_photos = set()  # Garantir que processed_photos seja um conjunto
 
     for photo_name in os.listdir(event_photos_directory):
         if photo_name.lower().endswith(('.png', '.jpg', '.jpeg')):
-            photo_path = os.path.join(f'event_images/{event_id}', photo_name)
-            if compare_faces(user_selfie_data, load_image_bytes(os.path.join(event_photos_directory, photo_name))):
-                matches.append(os.path.join('uploads/event_images', str(event_id), photo_name).replace('\\', '/'))
+            photo_path = os.path.join(event_photos_directory, photo_name)
+            photo_relative_path = os.path.join(f'event_images/{event_id}', photo_name)
+            if photo_relative_path not in processed_photos:
+                if compare_faces(user_selfie_data, load_image_bytes(photo_path)):
+                    watermark_path = os.path.join('uploads', 'event_images', str(event_id), f'wm_{photo_name}').replace('\\', '/')
+                    if watermark_path not in matches.values():
+                        add_image_watermark(photo_path, 'app/static/images/logo.png', os.path.join(event_photos_directory, f'wm_{photo_name}'))
+                        matches[photo_relative_path] = watermark_path
+                processed_photos.add(photo_relative_path)
 
-    if not matches:
-        return redirect(url_for('main.home', show_modal='true'))
-    else:
-        end_time = time.time()
-        duration = end_time - start_time
-        current_app.logger.info(f'Processing time for view_photos: {duration} seconds')
-        return render_template('photos.html', photos=matches, event_id=event_id)
+    session[f'user_{user_id}_photos'] = matches
+    session[f'user_{user_id}_processed_photos'] = list(processed_photos)  # Converte para lista para evitar problemas com serialização
+
+    end_time = time.time()
+    logging.info(f"Processed event {event_id} for user {user_id} in {end_time - start_time:.2f} seconds")
+    return render_template('photos.html', photos=list(matches.values()), event_id=event_id)
