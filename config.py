@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'postgresql://snapticket1:047441cc-1b6e-4aa4-b679-a2ecf4fa64d1@snapticket.c128ww4a4ihw.us-east-1.rds.amazonaws.com:5432/snapticket'  
+    SQLALCHEMY_DATABASE_URI = 'postgresql://snapticket:Galo!doido2000@snapticketbd.c128ww4a4ihw.us-east-1.rds.amazonaws.com:5432/snapticketbd'  
 
     UPLOAD_FOLDER = os.path.join('app','static', 'uploads')
     USER_SELFIES_FOLDER = os.path.join(UPLOAD_FOLDER, 'user_selfies')
