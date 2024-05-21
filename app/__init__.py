@@ -22,14 +22,12 @@ def create_app():
     login_manager.login_view = 'main.login'
     login_manager.init_app(app)
 
-
     # Certifique-se que as pastas para uploads sejam criadas
     for folder in [app.config['UPLOAD_FOLDER'], 
                    app.config['USER_SELFIES_FOLDER'], 
                    app.config['EVENT_COVERS_FOLDER']]:
         if not os.path.exists(folder):
             os.makedirs(folder)
-
 
     # Função para carregar o usuário a partir da sessão
     from app.models import Usuario  # Import aqui para evitar importação circular

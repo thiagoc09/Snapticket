@@ -9,14 +9,19 @@ from ..models import Usuario, Evento, ImagemEvento
 import os
 from datetime import datetime
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
-from app.face_recognition import compare_faces, load_image_bytes
+from app.face_recognition import load_image_bytes  # Não precisamos mais do compare_faces
 from PIL import Image
+import boto3
+from botocore.exceptions import NoCredentialsError, PartialCredentialsError
 
 # Configuração do LoginManager
 login_manager = LoginManager()
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id))
+
+# Configurar cliente do Rekognition
+rekognition_client = boto3.client('rekognition', region_name='us-west-2')  # Ajuste a região conforme necessário
 
 # Função auxiliar para validar o arquivo de upload
 def allowed_file(filename):
@@ -43,9 +48,22 @@ def add_image_watermark(input_image_path, watermark_image_path, output_image_pat
         watermarked_image = watermarked_image.convert("RGB")
         watermarked_image.save(output_image_path, "JPEG")
 
+def compare_faces_aws(source_image_bytes, target_image_bytes):
+    try:
+        response = rekognition_client.compare_faces(
+            SourceImage={'Bytes': source_image_bytes},
+            TargetImage={'Bytes': target_image_bytes},
+            SimilarityThreshold=90  # Ajuste o limiar conforme necessário
+        )
+        return len(response['FaceMatches']) > 0
+    except (NoCredentialsError, PartialCredentialsError) as e:
+        logging.error(f"Erro de credenciais AWS: {e}")
+        return False
+    except Exception as e:
+        logging.error(f"Erro ao comparar faces com AWS Rekognition: {e}")
+        return False
 
 @main.route('/')
-@login_required
 def home():
     start_time = time.time()
     event_name = request.args.get('event_name')
@@ -53,24 +71,36 @@ def home():
         eventos = Evento.query.filter(Evento.nome_evento.ilike(f'%{event_name}%')).all()
     else:
         eventos = Evento.query.all()
+
     show_modal = request.args.get('show_modal', False)
     elapsed_time = time.time() - start_time
     logging.info(f"Home page loaded in {elapsed_time:.2f} seconds")
-    return render_template('home.html', eventos=eventos, show_modal=show_modal)
+
+    # Passando 'logged_in' para o template para usar na renderização condicional do header e na interatividade dos eventos
+    return render_template('home.html', eventos=eventos, show_modal=show_modal, logged_in=current_user.is_authenticated)
+
+# Configura o nível de log para info para capturar informações detalhadas durante o processo de login
+logging.basicConfig(level=logging.INFO)
 
 @main.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        senha = request.form.get('senha')
-        usuario = Usuario.query.filter_by(email=email).first()
-        if usuario and check_password_hash(usuario.senha_hash, senha):
-            login_user(usuario)
-            return redirect(url_for('main.home'))
-        else:
-            flash('E-mail ou senha incorretos')
-            return render_template('login.html')
-    return render_template('login.html')
+    try:
+        if request.method == 'POST':
+            # Suponha que você está pegando dados de usuário assim
+            username = request.form['username']
+            password = request.form['password']
+            # Lógica de verificação do usuário
+            user = Usuario.query.filter_by(username=username).first()
+            if user and check_password_hash(user.password, password):
+                login_user(user)
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Login falhou. Verifique suas credenciais.')
+        return render_template('login.html')
+    except Exception as e:
+        main.logger.error(f'Erro durante o login: {e}')
+        flash('Um erro ocorreu durante o login.')
+        return render_template('login.html'), 500
 
 @main.route('/logout')
 @login_required
@@ -131,7 +161,7 @@ def cadastro_evento():
         localizacao = request.form['localizacao']
         descricao = request.form['descricao']
         try:
-                        data_evento = datetime.strptime(data_evento_str, '%Y-%m-%d').date()
+            data_evento = datetime.strptime(data_evento_str, '%Y-%m-%d').date()
         except ValueError:
             flash('Formato de data inválido.')
             return redirect(url_for('cadastro_evento'))
@@ -239,7 +269,9 @@ def view_photos(event_id):
             photo_path = os.path.join(event_photos_directory, photo_name)
             photo_relative_path = os.path.join(f'event_images/{event_id}', photo_name)
             if photo_relative_path not in processed_photos:
-                if compare_faces(user_selfie_data, load_image_bytes(photo_path)):
+                # Carregar a imagem sem a marca d'água para comparar
+                original_image_path = os.path.join(event_photos_directory, photo_name.split('wm_', 1)[-1])
+                if compare_faces_aws(user_selfie_data, load_image_bytes(original_image_path)):
                     watermark_path = os.path.join('uploads', 'event_images', str(event_id), f'wm_{photo_name}').replace('\\', '/')
                     if watermark_path not in matches.values():
                         add_image_watermark(photo_path, 'app/static/images/logo.png', os.path.join(event_photos_directory, f'wm_{photo_name}'))

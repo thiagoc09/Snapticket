@@ -10,120 +10,132 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
 </head>
 <body>
-  {% extends "base.html" %}
+{% extends "base.html" %}
 
-  {% block title %}Home - SnapTicket{% endblock %}
-  
-  {% block content %}
-  <div class="search-section">
-      <h2 class="search-title">Suas fotos com uma selfie</h2>
-      <p class="search-subtitle">Encontre seus momentos com nossa IA</p>
-      <form id="search-form" class="search-form">
-          <input type="text" id="search-input" name="event_name" placeholder="Digite aqui o nome do evento..." class="search-input">
-          <button type="submit" class="search-button">BUSCAR</button>
-      </form>
-  </div>
-  <div id="event-results" class="row">
-      {% for evento in eventos %}
-      <div class="col-md-4 mb-4 event-card">
-          <a href="{{ url_for('main.view_photos', event_id=evento.id) }}" class="card-link event-link">
-              <div class="card bg-dark text-light">
-                  <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img" alt="Foto do Evento">
-                  <div class="card-img-overlay d-flex flex-column justify-content-end">
-                      <h5 class="card-title">{{ evento.nome_evento }}</h5>
-                      <p class="card-date">{{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
-                  </div>
-              </div>
-          </a>
+{% block title %}Home - SnapTicket{% endblock %}
+
+{% block content %}
+<div class="search-section">
+    <h2 class="search-title">Suas fotos com uma selfie</h2>
+    <p class="search-subtitle">Encontre seus momentos com nossa IA</p>
+    <form id="search-form" class="search-form">
+        <input type="text" id="search-input" name="event_name" placeholder="Digite aqui o nome do evento..." class="search-input">
+        <button type="submit" class="search-button">BUSCAR</button>
+    </form>
+</div>
+<div id="event-results" class="row">
+    {% for evento in eventos %}
+    <div class="col-md-4 mb-4 event-card">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.view_photos', event_id=evento.id) }}" class="card-link">
+        {% else %}
+            <a href="#" onclick="alert('É necessário estar logado para ver as fotos.'); return false;" class="card-link">
+        {% endif %}
+            <div class="card bg-dark text-light">
+                <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img" alt="Foto do Evento">
+                <div class="card-img-overlay d-flex flex-column justify-content-end">
+                    <h5 class="card-title">{{ evento.nome_evento }}</h5>
+                    <p class="card-date">{{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Modal para "Sem Fotos Disponíveis" -->
+<div class="modal fade" id="noPhotosModal" tabindex="-1" role="dialog" aria-labelledby="noPhotosModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="noPhotosModalLabel">Aviso</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
-      {% endfor %}
-  </div>
-
-  <!-- Modal para "Sem Fotos Disponíveis" -->
-  <div class="modal fade" id="noPhotosModal" tabindex="-1" role="dialog" aria-labelledby="noPhotosModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="noPhotosModalLabel">Aviso</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          Não foram encontradas fotos suas neste evento.
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        </div>
+      <div class="modal-body">
+        Não foram encontradas fotos suas neste evento.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Tela de loading -->
-  <div id="loading" class="loading-overlay">
-    <div class="spinner"></div>
-  </div>
-  
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var loadingOverlay = document.getElementById("loading");
-        loadingOverlay.style.display = "none";  // Esconder a tela de loading
-    });
+<!-- Tela de loading -->
+<div id="loading" class="loading-overlay">
+  <div class="spinner"></div>
+</div>
 
-    document.getElementById('search-form').addEventListener('submit', function(event) {
-      event.preventDefault();
-      const searchInput = document.getElementById('search-input').value;
-      
-      fetch(`/search_events?event_name=${encodeURIComponent(searchInput)}`)
-          .then(response => response.json())
-          .then(data => {
-              const eventResults = document.getElementById('event-results');
-              eventResults.innerHTML = '';
-              if (data.length === 0) {
-                  $('#noPhotosModal').modal('show');
-              } else {
-                  data.forEach(evento => {
-                      const eventCard = `
-                          <div class="col-md-4 mb-4 event-card">
-                              <a href="/view_photos/${evento.id}" class="card-link event-link">
-                                  <div class="card bg-dark text-light">
-                                      <img src="${evento.foto_capa}" class="card-img" alt="Foto do Evento">
-                                      <div class="card-img-overlay d-flex flex-column justify-content-end">
-                                          <h5 class="card-title">${evento.nome_evento}</h5>
-                                          <p class="card-date">${new Date(evento.data_evento).toLocaleDateString('pt-BR')}</p>
-                                      </div>
-                                  </div>
-                              </a>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      var loadingOverlay = document.getElementById("loading");
+      loadingOverlay.style.display = "none";  // Esconder a tela de loading
+  });
+
+  document.getElementById('search-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const searchInput = document.getElementById('search-input').value;
+    
+    fetch(/search_events?event_name=${encodeURIComponent(searchInput)})
+        .then(response => response.json())
+        .then(data => {
+            const eventResults = document.getElementById('event-results');
+            eventResults.innerHTML = '';
+            if (data.length === 0) {
+                $('#noPhotosModal').modal('show');
+            } else {
+                data.forEach(evento => {
+                    const eventCard = `
+                        <div class="col-md-4 mb-4 event-card">
+                          <a href="/view_photos/${evento.id}" class="card-link event-link">
+                          <div class="card bg-dark text-light">
+                              <img src="${evento.foto_capa}" class="card-img" alt="Foto do Evento">
+                              <div class="card-img-overlay d-flex flex-column justify-content-end">
+                                  <h5 class="card-title">${evento.nome_evento}</h5>
+                                  <p class="card-date">${new Date(evento.data_evento).toLocaleDateString('pt-BR')}</p>
+                              </div>
                           </div>
-                      `;
-                      eventResults.innerHTML += eventCard;
-                  });
+                      </a>
+                  </div>
+              `;
+              eventResults.innerHTML += eventCard;
+          });
 
-                  // Adicionar evento de clique para exibir o loading nos novos links
-                  const eventLinks = document.querySelectorAll('.event-link');
-                  eventLinks.forEach(function(link) {
-                      link.addEventListener('click', function() {
-                          loadingOverlay.style.display = 'flex';  // Mostrar a tela de loading
-                      });
-                  });
-              }
-          })
-          .catch(error => console.error('Error:', error));
-    });
+          // Adicionar evento de clique para exibir o loading nos novos links
+          const eventLinks = document.querySelectorAll('.event-link');
+          eventLinks.forEach(function(link) {
+              link.addEventListener('click', function() {
+                  if (!current_user.is_authenticated) {
+                      alert('É necessário estar logado para ver as fotos.');
+                      return false;
+                  }
+                  loadingOverlay.style.display = 'flex';  // Mostrar a tela de loading
+              });
+          });
+      }
+  })
+  .catch(error => console.error('Error:', error));
+});
 
-    // Adicionar evento de clique para exibir o loading nos links de evento iniciais
-    const eventLinks = document.querySelectorAll('.event-link');
-    eventLinks.forEach(function(link) {
-        link.addEventListener('click', function() {
-            var loadingOverlay = document.getElementById("loading");
-            loadingOverlay.style.display = 'flex';  // Mostrar a tela de loading
-        });
-    });
-  </script>
+// Adicionar evento de clique para exibir o loading nos links de evento iniciais
+const eventLinks = document.querySelectorAll('.event-link');
+eventLinks.forEach(function(link) {
+link.addEventListener('click', function() {
+    if (!current_user.is_authenticated) {
+        alert('É necessário estar logado para ver as fotos.');
+        return false;
+    }
+    var loadingOverlay = document.getElementById("loading");
+    loadingOverlay.style.display = 'flex';  // Mostrar a tela de loading
+});
+});
+</script>
 
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  {% endblock %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
 </body>
 </html>
