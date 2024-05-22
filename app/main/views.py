@@ -63,21 +63,26 @@ def compare_faces_aws(source_image_bytes, target_image_bytes):
         logging.error(f"Erro ao comparar faces com AWS Rekognition: {e}")
         return False
 
+# @main.route('/')
+# def home():
+#     start_time = time.time()
+#     event_name = request.args.get('event_name')
+#     if event_name:
+#         eventos = Evento.query.filter(Evento.nome_evento.ilike(f'%{event_name}%')).all()
+#     else:
+#         eventos = Evento.query.all()
+
+#     show_modal = request.args.get('show_modal', False)
+#     elapsed_time = time.time() - start_time
+#     logging.info(f"Home page loaded in {elapsed_time:.2f} seconds")
+
+#     # Passando 'logged_in' para o template para usar na renderização condicional do header e na interatividade dos eventos
+#     return render_template('home.html', eventos=eventos, show_modal=show_modal, logged_in=current_user.is_authenticated)
+    
+    
 @main.route('/')
 def home():
-    start_time = time.time()
-    event_name = request.args.get('event_name')
-    if event_name:
-        eventos = Evento.query.filter(Evento.nome_evento.ilike(f'%{event_name}%')).all()
-    else:
-        eventos = Evento.query.all()
-
-    show_modal = request.args.get('show_modal', False)
-    elapsed_time = time.time() - start_time
-    logging.info(f"Home page loaded in {elapsed_time:.2f} seconds")
-
-    # Passando 'logged_in' para o template para usar na renderização condicional do header e na interatividade dos eventos
-    return render_template('home.html', eventos=eventos, show_modal=show_modal, logged_in=current_user.is_authenticated)
+    return render_template('home.html')
 
 # Configura o nível de log para info para capturar informações detalhadas durante o processo de login
 logging.basicConfig(level=logging.INFO)
