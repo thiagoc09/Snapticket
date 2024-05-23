@@ -5,26 +5,68 @@ body {
     padding: 0;
     color: #fff;
 }
-
-header .navbar-brand img {
-    height: 150px;
-    width: auto;
+header {
+    background: transparent; /* Remove qualquer fundo, tornando-o completamente transparente */
+    padding: 10px 0; /* Remove o padding horizontal */
 }
 
-.navbar-nav .nav-link {
-    color: #28a745 !important;
-    font-weight: bold;
-    margin-right: 15px;
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Mantém os itens espaçados entre si */
+    align-items: center;
+    width: 100%;
+    padding-left: 15%; /* Ajuste conforme a alinhamento dos eventos */
+    padding-right: 15%; /* Alinha os links à direita */
+    background: none !important; /* Assegura que não há fundo */
 }
 
-.navbar-nav .nav-link:hover {
-    color: #218838 !important;
+.navbar-brand {
+    text-align: left;
+    flex-grow: 1;
 }
 
+.navbar-nav {
+    display: flex;
+    list-style: none; /* Remove estilos de lista */
+    margin: 0; /* Remove margens padrão */
+    padding-left: 0; /* Remove padding padrão à esquerda */
+    gap: 20px; /* Espaçamento entre os links */
+}
+
+.nav-item {
+    padding: 0 10px; /* Espaçamento horizontal entre os itens do menu */
+}
+
+.nav-link {
+    color: #fff; /* Cor branca para os links */
+    padding: 8px 12px; /* Espaçamento interno para os links */
+}
+
+.nav-link:hover {
+    color: #28a745; /* Cor ao passar o mouse */
+}
+
+/* Remoção de estilos desnecessários do Bootstrap que podem afetar o alinhamento */
+.navbar-expand-lg .navbar-nav .nav-link {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Estilos para garantir responsividade */
+@media (max-width: 992px) {
+    .navbar {
+        padding-left: 10px; /* Reduz o padding em telas menores */
+        padding-right: 10px; /* Reduz o padding em telas menores */
+        justify-content: space-between; /* Assegura que os itens estejam bem distribuídos */
+    }
+    .navbar-nav {
+        justify-content: center; /* Centraliza os links em telas menores */
+    }
+}
 .search-section {
     padding: 20px;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 100px;
     margin-bottom: 40px;
 }
 
@@ -32,7 +74,6 @@ header .navbar-brand img {
     font-size: 2em;
     margin-bottom: 10px;
     color: #fff;
-    font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
 
@@ -40,7 +81,6 @@ header .navbar-brand img {
     font-size: 1.2em;
     margin-bottom: 20px;
     color: #28a745;
-    font-family: 'Poppins', sans-serif;
 }
 
 .search-form {
@@ -69,8 +109,14 @@ header .navbar-brand img {
     background-color: #218838;
 }
 
-.event-card {
-    margin-top: 20px;
+#event-results {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0px;
+    padding: 20px;
+    margin: 0 auto;
+    max-width: 1100px;
 }
 
 .card {
@@ -78,13 +124,14 @@ header .navbar-brand img {
     border: none;
     position: relative;
     width: 100%;
-    max-height: 300px;
+    max-width: 320px;
+    height: auto;
 }
 
 .card-img {
     border-radius: 10px;
     width: 100%;
-    height: 300px;
+    height: 200px;
     object-fit: cover;
 }
 
@@ -101,7 +148,6 @@ header .navbar-brand img {
 .card-title {
     font-size: 1.2em;
     color: #fff;
-    margin: 0;
 }
 
 .card-date {
@@ -123,7 +169,32 @@ header .navbar-brand img {
     color: #fff;
 }
 
-/* Estilos para o modal */
+.locked-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.locked-overlay p {
+    margin: 0;
+    padding: 10px; /* Adiciona um pouco de espaço ao redor do texto */
+    text-align: center; /* Centraliza o texto */
+    font-size: 0.9em; /* Ajuste o tamanho da fonte conforme necessário */
+}
+
+.locked:hover .locked-overlay {
+    display: flex;
+}
+
 .modal-header {
     background-color: #28a745;
     color: #fff;
@@ -141,4 +212,31 @@ header .navbar-brand img {
 
 .modal-footer .btn-secondary:hover {
     background-color: #555;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-top: 4px solid #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

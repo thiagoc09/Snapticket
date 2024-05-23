@@ -1,77 +1,77 @@
-/* static/css/login.css */
-body, html {
-    height: 100%;
+/* login.css */
+
+/* Background gradient */
+body {
+    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    font-family: 'Poppins', sans-serif;
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #333;
+    padding: 0;
+    color: #fff;
+}
+
+/* Center the form */
+.container {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-.login-container {
-    background-color: #222;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
-    text-align: center;
-    width: 300px; /* Mantém a largura original do contêiner */
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Alinha os filhos ao centro horizontalmente */
-    margin: auto; /* Para centralizar verticalmente na página se desejar */
+    min-height: 100vh;
 }
 
+.form-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    text-align: center; /* Centraliza o texto no container */
+}
 
 .logo {
-    width: 220px; /* Largura do logo aumentada */
-    height: auto; /* Altura ajustada automaticamente para manter proporções */
-    display: block; /* Garante que a imagem seja centralizada horizontalmente */
-    margin: 0 auto; /* Remove a margem superior e inferior, centraliza horizontalmente */
-}
-input[type=email],
-input[type=password] {
-    width: calc(100% - 20px); /* Ajusta a largura considerando o padding */
-    padding: 12px 10px;
-    margin-bottom: 10px; /* Espaço entre os elementos */
-    border: none;
-    border-radius: 5px;
-    background-color: #333;
-    color: white;
+    width: 230px; /* Ajuste o tamanho do logo conforme necessário */
+    margin-bottom: 30px;
 }
 
-.buttons {
-    width: 100%; /* Garante que o contêiner dos botões tenha a largura total */
-    display: flex;
-    justify-content: space-between; /* Espaça os botões igualmente */
+/* Form styles */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left; /* Alinha o texto à esquerda nos grupos de formulário */
 }
 
-button {
-    padding: 12px 0px; /* Padding vertical */
-    width: 48%; /* Aproximadamente metade da largura para cada botão, ajuste conforme a necessidade */
-    border-radius: 5px;
+.form-control {
+    background-color: rgba(255, 255, 255, 0.2);
     border: none;
+    border-radius: 5px;
+    padding: 10px;
+    color: #fff;
+}
+
+.form-control:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: none;
+    box-shadow: none;
+}
+
+.btn-primary {
+    background-color: #28a745;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
-    color: white;
-    background-color: #4CAF50; /* Exemplo de cor para o botão de cadastro */
 }
 
-button.btn-acessar {
-    background-color: #0d6efd; /* Cor do botão Acessar */
+.btn-primary:hover {
+    background-color: #218838;
 }
 
-button:hover {
-    opacity: 0.9; /* Efeito ao passar o mouse por cima do botão */
-}
-.organizador-frase  {
-    color: GRAY; /* Mantém a cor branca do link */
-    display: block; /* Ocupa a linha inteira */
-    margin-top: 20px; /* Espaço acima do link */
-}
-
-/* Ajuste da frase para organizadores de eventos */
-.organizador-frase a {
-    color: rgb(196, 190, 190); /* Mantém a cor branca do link */
-    display: block; /* Ocupa a linha inteira */
-    margin-top: 10px; /* Espaço acima do link */
+/* Error message */
+.flash-message {
+    background-color: rgba(255, 0, 0, 0.2);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
 }

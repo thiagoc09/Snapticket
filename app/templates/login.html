@@ -1,28 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
-
-    <div class="login-container">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SnapTicket Logo" class="logo">
-        <!-- Formulário de login -->
-        <form action="{{ url_for('main.login') }}" method="post">
-            <input type="email" id="email" name="email" placeholder="E-mail" required>
-            <input type="password" id="senha" name="senha" placeholder="Senha" required>
-            <div class="buttons">
-                <button type="submit" class="btn btn-acessar">Acessar</button>
-                <!-- Botão para a página de cadastro -->
-                <button onclick="window.location.href='{{ url_for('main.register') }}'" type="button" class="btn-cadastro">Cadastro</button>
-
-    
-            </div>
-        </form>
-        <!-- Link para a página de cadastro de evento -->
-        <p class="organizador-frase">Organizador de evento? <a href="{{ url_for('main.cadastro_evento') }}">Cadastre seu evento aqui</a></p>
-
+    <div class="container">
+        <div class="form-container">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SnapTicket Logo" class="logo">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-message">
+                    {% for category, message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
+            <form method="POST" action="{{ url_for('main.login') }}">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Acessar</button>
+            </form>
+        </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

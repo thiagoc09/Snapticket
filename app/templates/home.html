@@ -29,7 +29,7 @@
         {% if current_user.is_authenticated %}
             <a href="{{ url_for('main.view_photos', event_id=evento.id) }}" class="card-link">
         {% else %}
-            <a href="#" onclick="alert('É necessário estar logado para ver as fotos.'); return false;" class="card-link">
+            <a href="#" onclick="alert('É necessário estar logado para ver as fotos.'); return false;" class="card-link locked">
         {% endif %}
             <div class="card bg-dark text-light">
                 <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img" alt="Foto do Evento">
@@ -37,6 +37,11 @@
                     <h5 class="card-title">{{ evento.nome_evento }}</h5>
                     <p class="card-date">{{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
                 </div>
+                {% if not current_user.is_authenticated %}
+                <div class="locked-overlay">
+                    <p class="locked-text">Área exclusiva para usuários logados</p>
+                </div>
+                {% endif %}
             </div>
         </a>
     </div>
@@ -78,7 +83,7 @@
     event.preventDefault();
     const searchInput = document.getElementById('search-input').value;
     
-    fetch(/search_events?event_name=${encodeURIComponent(searchInput)})
+    fetch(`/search_events?event_name=${encodeURIComponent(searchInput)}`)
         .then(response => response.json())
         .then(data => {
             const eventResults = document.getElementById('event-results');

@@ -63,27 +63,28 @@ def compare_faces_aws(source_image_bytes, target_image_bytes):
         logging.error(f"Erro ao comparar faces com AWS Rekognition: {e}")
         return False
 
-# @main.route('/')
-# def home():
-#     start_time = time.time()
-#     event_name = request.args.get('event_name')
-#     if event_name:
-#         eventos = Evento.query.filter(Evento.nome_evento.ilike(f'%{event_name}%')).all()
-#     else:
-#         eventos = Evento.query.all()
-
-#     show_modal = request.args.get('show_modal', False)
-#     elapsed_time = time.time() - start_time
-#     logging.info(f"Home page loaded in {elapsed_time:.2f} seconds")
-
-#     # Passando 'logged_in' para o template para usar na renderização condicional do header e na interatividade dos eventos
-#     return render_template('home.html', eventos=eventos, show_modal=show_modal, logged_in=current_user.is_authenticated)
-    
-    
 @main.route('/')
 def home():
-    return render_template('home.html')
+    start_time = time.time()
+    event_name = request.args.get('event_name')
+    if event_name:
+        eventos = Evento.query.filter(Evento.nome_evento.ilike(f'%{event_name}%')).all()
+    else:
+        eventos = Evento.query.all()
 
+    show_modal = request.args.get('show_modal', False)
+    elapsed_time = time.time() - start_time
+    logging.info(f"Home page loaded in {elapsed_time:.2f} seconds")
+
+    # Passando 'logged_in' para o template para usar na renderização condicional do header e na interatividade dos eventos
+    return render_template('home.html', eventos=eventos, show_modal=show_modal, logged_in=current_user.is_authenticated)
+    
+    
+# @main.route('/')
+# def home():
+#     return render_template('home.html')
+# Configuração do logger
+logger = logging.getLogger(__name__)
 # Configura o nível de log para info para capturar informações detalhadas durante o processo de login
 logging.basicConfig(level=logging.INFO)
 
@@ -91,19 +92,26 @@ logging.basicConfig(level=logging.INFO)
 def login():
     try:
         if request.method == 'POST':
-            # Suponha que você está pegando dados de usuário assim
-            username = request.form['username']
-            password = request.form['password']
-            # Lógica de verificação do usuário
-            user = Usuario.query.filter_by(username=username).first()
-            if user and check_password_hash(user.password, password):
-                login_user(user)
-                return redirect(url_for('dashboard'))
+            email = request.form.get('email')
+            password = request.form.get('password')
+            logger.info(f'Tentativa de login com email: {email}')
+
+            user = Usuario.query.filter_by(email=email).first()
+            if user:
+                logger.info(f'Usuário encontrado: {user.nome}')
+                if check_password_hash(user.senha_hash, password):
+                    login_user(user)
+                    logger.info('Login bem-sucedido')
+                    return redirect(url_for('main.home'))
+                else:
+                    logger.info('Senha incorreta')
             else:
-                flash('Login falhou. Verifique suas credenciais.')
+                logger.info('Usuário não encontrado')
+
+            flash('Login falhou. Verifique suas credenciais.')
         return render_template('login.html')
     except Exception as e:
-        main.logger.error(f'Erro durante o login: {e}')
+        logger.error(f'Erro durante o login: {e}')
         flash('Um erro ocorreu durante o login.')
         return render_template('login.html'), 500
 
