@@ -1,4 +1,3 @@
-<!-- templates/register.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -8,23 +7,20 @@
 </head>
 <body>
     <div class="register-container">
-        <h2>Cadastro</h2>
+        <h2>Crie sua conta SnapTicket</h2>
         <form method="post" enctype="multipart/form-data">
             <input type="text" placeholder="Nome" name="nome" required>
             <input type="email" placeholder="E-mail" name="email" required>
             <input type="password" name="senha" placeholder="Senha" required>
-            <input type="tel" placeholder="Telefone" name="telefone" required>
-            <input type="text" placeholder="CPF" name="cpf" required>
-            <div class="file-input-container">
-                <label for="selfie" class="custom-file-upload">
-                    <i class="fa fa-camera"></i> Tirar uma foto
-                </label>
-                <input type="file" id="selfie" name="selfie" accept="image/*">
-            </div>
+            <input type="password" name="confirmar_senha" placeholder="Confirmar senha" required>
+            <input type="file" id="selfie" name="selfie" accept="image/*" style="display: none;">
+            <label for="selfie" class="btn-upload">Envie uma selfie</label>
+            <input type="file" id="selfie" name="selfie" accept="image/*" style="display: none;">
+            
             <button type="submit" class="btn-submit">Finalizar cadastro</button>
         </form>
         <div class="login-footer">
-            Já tem uma conta? <a href="{{ url_for('main.login') }}">Acessar</a>
+            Possui cadastro? <a href="{{ url_for('main.login') }}">Acessar</a>
         </div>
     </div>
 </body>
