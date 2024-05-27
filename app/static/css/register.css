@@ -117,3 +117,61 @@ input[type="file"] {
 .login-footer a:hover {
     text-decoration: underline;
 }
+header {
+    background: transparent; /* Remove qualquer fundo, tornando-o completamente transparente */
+    padding: 10px 0; /* Remove o padding horizontal */
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Mantém os itens espaçados entre si */
+    align-items: center;
+    width: 100%;
+    padding-left: 15%; /* Ajuste conforme a alinhamento dos eventos */
+    padding-right: 15%; /* Alinha os links à direita */
+    background: none !important; /* Assegura que não há fundo */
+}
+
+.navbar-brand {
+    text-align: left;
+    flex-grow: 1;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none; /* Remove estilos de lista */
+    margin: 0; /* Remove margens padrão */
+    padding-left: 0; /* Remove padding padrão à esquerda */
+    gap: 20px; /* Espaçamento entre os links */
+}
+
+.nav-item {
+    padding: 0 10px; /* Espaçamento horizontal entre os itens do menu */
+}
+
+.nav-link {
+    color: #fff; /* Cor branca para os links */
+    padding: 8px 12px; /* Espaçamento interno para os links */
+}
+
+.nav-link:hover {
+    color: #28a745; /* Cor ao passar o mouse */
+}
+
+/* Remoção de estilos desnecessários do Bootstrap que podem afetar o alinhamento */
+.navbar-expand-lg .navbar-nav .nav-link {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Estilos para garantir responsividade */
+@media (max-width: 992px) {
+    .navbar {
+        padding-left: 10px; /* Reduz o padding em telas menores */
+        padding-right: 10px; /* Reduz o padding em telas menores */
+        justify-content: space-between; /* Assegura que os itens estejam bem distribuídos */
+    }
+    .navbar-nav {
+        justify-content: center; /* Centraliza os links em telas menores */
+    }
+}

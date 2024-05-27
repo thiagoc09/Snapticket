@@ -1,70 +1,207 @@
+/* Base styling for the body to ensure full height and no margin */
 body, html {
     height: 100%;
     margin: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #0f2027; /* Dark background for better contrast */
+    color: #fff; /* White text color for readability */
 }
 
-.cadastro-evento-container {
-    background-color: #222;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    width: 70%; /* Ocupa 70% da largura da tela */
-    max-width: 800px; /* Largura máxima para dispositivos maiores */
-    margin: 20px auto; /* Centralização vertical e horizontal */
+/* Container styling for center alignment and spacing */
+.container {
+    max-width: 800px; /* Optimal width for readability */
+    margin: auto; /* Center align the container */
+    padding: 20px; /* Padding for aesthetic spacing */
+}
+
+/* Headings for clear section demarcation */
+h1, h2, h3 {
+    text-align: center; /* Center aligning the text */
+    color: #fff; /* White for high contrast and focus */
+    font-weight: 600; /* Bold font for emphasis */
+}
+
+/* Subtle paragraph styling for better legibility */
+p {
+    color: #ccc; /* Light gray for less emphasis compared to headers */
+    text-align: center;
+    margin-bottom: 20px; /* Spacing below paragraphs */
+}
+
+/* Styling for the plan boxes */
+.plan {
+    background-color: rgba(35, 40, 45, 0.9); /* Slightly transparent dark background */
+    padding: 15px;
+    border-radius: 8px; /* Rounded corners */
+    margin-bottom: 20px; /* Spacing between plan boxes */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for 3D effect */
+    cursor: pointer; /* Indicates the plan can be selected */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.plan:hover, .plan.selected {
+    transform: scale(1.05); /* Slightly enlarge on hover/select */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* More prominent shadow on hover/select */
+    border: 2px solid #28a745; /* Highlight selected plan with a green border */
+}
+
+.plan h3 {
+    color: #28a745; /* Orange color for headers within the plan box */
+}
+
+.plan ul {
+    list-style-type: none; /* Remove default list styling */
+    padding: 0; /* Remove padding */
+}
+
+.plan li {
+    padding: 10px 0; /* Vertical padding for list items */
+    border-bottom: 1px solid #555; /* Separator for items */
+    color: #ddd; /* Light grey color for list text */
+}
+
+/* Form styling */
+.form-group {
+    margin-bottom: 15px; /* Spacing between form groups */
+}
+
+.form-group label {
+    color: #ddd; /* Light grey for labels */
+}
+
+.form-control {
+    background-color: rgba(255, 255, 255, 0.1); /* Subtle background for inputs */
+    border: 1px solid #555; /* Matching the list item separator */
+    color: #fff; /* Text color for input */
+    border-radius: 4px; /* Rounded borders for inputs */
+}
+
+/* Button styling for consistency across the platform */
+.btn {
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 90%; /* Ensures alignment and size consistency */
+    margin: 0 auto; /* Center buttons within their container */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Bootstrap's primary blue */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover for visual feedback */
+}
+
+.btn-success {
+    background-color: #28a745; /* Success green for the submit button */
+}
+
+.btn-success:hover {
+    background-color: #1e7e34; /* Darker green on hover */
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px; /* Reduced padding on smaller screens */
+    }
+}
+
+
+/* Estilização dos cards dos planos */
+.plan-card {
     display: flex;
     flex-direction: column;
-}
-
-h2 {
-    color: white;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-input[type="text"],
-input[type="date"],
-textarea,
-input[type="file"] {
-    width: 100%; /* A largura do input se ajusta ao container */
+    justify-content: center;
+    align-items: center;
     padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    border: none;
-    background-color: #333;
-    color: white;
+    border: 2px solid transparent; /* Bordas transparentes inicialmente */
+    border-radius: 8px;
+    background-color: #243b4a; /* Cor de fundo mais escura para um card */
+    color: white; /* Cor do texto dentro do card */
+    cursor: pointer; /* Indica que o card é clicável */
+    transition: all 0.3s ease; /* Transição suave para efeitos */
+    height: 90px; /* Nova altura reduzida */
+    margin: 0 10px 20px 10px; /* Ajusta o espaçamento em torno dos cards */
+    width: 40%;
 }
 
-label.custom-file-upload {
-    display: inline-block;
-    padding: 12px 30px;
-    cursor: pointer;
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    text-align: center;
+.plan-card:nth-child(2) {
+    background-color: #2b4a59; /* Um tom levemente diferente para o segundo card */
 }
 
-input[type="file"] {
-    display: none; /* Esconder o input file padrão */
+/* Estilo quando um card é selecionado */
+.plan-card.selected {
+    border-color: #28a745; /* Contorno verde quando selecionado */
 }
 
-.btn-enviar {
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .plan-card {
+        width: 100%; /* Ajusta a largura em telas menores */
+        margin-bottom: 10px; /* Espaço entre os cards em layout vertical */
+    }
+}
+
+header {
+    background: transparent; /* Remove qualquer fundo, tornando-o completamente transparente */
+    padding: 10px 0; /* Remove o padding horizontal */
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Mantém os itens espaçados entre si */
+    align-items: center;
     width: 100%;
-    padding: 15px;
-    border-radius: 5px;
-    border: none;
-    background-color: #28a745;
-    color: white;
-    margin-top: 10px; /* Espaço acima do botão */
-    cursor: pointer;
+    padding-left: 15%; /* Ajuste conforme a alinhamento dos eventos */
+    padding-right: 15%; /* Alinha os links à direita */
+    background: none !important; /* Assegura que não há fundo */
 }
 
-.btn-enviar:hover {
-    background-color: #218838;
+.navbar-brand {
+    text-align: left;
+    flex-grow: 1;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none; /* Remove estilos de lista */
+    margin: 0; /* Remove margens padrão */
+    padding-left: 0; /* Remove padding padrão à esquerda */
+    gap: 20px; /* Espaçamento entre os links */
+}
+
+.nav-item {
+    padding: 0 10px; /* Espaçamento horizontal entre os itens do menu */
+}
+
+.nav-link {
+    color: #fff; /* Cor branca para os links */
+    padding: 8px 12px; /* Espaçamento interno para os links */
+}
+
+.nav-link:hover {
+    color: #28a745; /* Cor ao passar o mouse */
+}
+
+/* Remoção de estilos desnecessários do Bootstrap que podem afetar o alinhamento */
+.navbar-expand-lg .navbar-nav .nav-link {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+/* Estilos para garantir responsividade */
+@media (max-width: 992px) {
+    .navbar {
+        padding-left: 10px; /* Reduz o padding em telas menores */
+        padding-right: 10px; /* Reduz o padding em telas menores */
+        justify-content: space-between; /* Assegura que os itens estejam bem distribuídos */
+    }
+    .navbar-nav {
+        justify-content: center; /* Centraliza os links em telas menores */
+    }
 }

@@ -1,53 +1,133 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Cadastro de Evento</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Eventos - SnapTicket</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro_evento.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
 </head>
 <body>
-    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
-      <div class="cadastro-evento-container">
-        <h2>Cadastro de Evento</h2>
-        <form method="post" action="{{ url_for('main.cadastro_evento') }}" enctype="multipart/form-data">
-          
-          <div class="form-group">
-            <input type="text" name="nome_evento" class="form-control" placeholder="Nome do Evento" required>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <a class="navbar-brand" href="{{ url_for('main.home') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo SnapTicket" style="height: 120px;">
+        </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+              {% if current_user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.my_photos') }}">Minhas fotos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.cart') }}">Meu carrinho</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.cadastro_evento') }}">Produtor de evento</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.register') }}">Cadastro</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
+              </li>
+              {% endif %}
+            </ul>
           </div>
-          
-          <div class="form-group">
-            <input type="date" name="data_evento" class="form-control" required>
+        </nav>
+      </header>
+    <div class="container mt-5">
+        <h1 class="text-center">Melhorar a experiência pós-evento dos participantes nunca foi tão simples</h1>
+        <p class="text-center text-muted">Usamos tecnologia de ponta para entregar as fotos oficiais do seu evento</p>
+        
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-primary">Conheça nossos planos</button>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-md-6">
+                <div class="plan">
+                    <h3>Plano Monetize</h3>
+                    <ul>
+                        <li>Opção para a compra e venda de fotos, ideal para aumentar o faturamento do evento</li>
+                        <li>Tecnologia de reconhecimento facial</li>
+                        <li>Fotos disponibilizadas com a marca d'água SnapTicket</li>
+                        <li>Ideal para fotógrafos independentes e casas de show</li>
+                        <li>Taxa SnapTicket: 15%</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="plan">
+                    <h3>Plano Impulsione</h3>
+                    <ul>
+                      <li>Aumente o compartilhamento das suas fotos oficiais.</li>
+                      <li>Tecnologia de reconhecimento facial</li>
+                        <li>Fotos disponibilizadas sem marca d'água SnapTicket</li>
+                        <li>Ideal para congressos e grandes eventos de entretenimento</li>
+                        <li>Pagamento realizado na inscrição do evento</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <form class="mt-5">
+            <h2>Cadastre seu evento</h2>
+
+            <div class="form-group">
+                <label for="eventName">Nome do Evento</label>
+                <input type="text" id="eventName" class="form-control" placeholder="Nome do Evento">
+            </div>
+            <div class="form-group">
+                <label for="eventDate">Data do Evento</label>
+                <input type="date" id="eventDate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="coverPhoto">Foto de Capa</label>
+                <input type="file" id="coverPhoto" class="form-control-file">
+            </div>
+            <div class="form-group">
+                <label for="eventPhotos">Fotos do Evento</label>
+                <input type="file" id="eventPhotos" class="form-control-file" multiple>
+            </div>
+            <div class="form-group">
+              <label for="plan">Escolha seu Plano:</label>
+              <div class="plan-options">
+                  <div class="plan-card" data-plan="monetize">
+                      <h4>Plano Monetize</h4>
+                      <p>Venda das fotos do evento. </p>
+                  </div>
+                  <div class="plan-card" data-plan="impulsione">
+                      <h4>Plano Impulsione</h4>
+                      <p>Descrição curta do plano.</p>
+                  </div>
+              </div>
+              <input type="hidden" name="selected_plan" id="selected_plan">
           </div>
-          
-          <div class="form-group">
-            <input type="text" name="localizacao" class="form-control" placeholder="Localização" required>
-          </div>
-          
-          <div class="form-group">
-            <textarea name="descricao" class="form-control" placeholder="Descrição"></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label class="custom-file-upload form-control">
-              <input type="file" name="foto_capa" accept="image/*"> Capa do Evento (opcional)
-            </label>
-          </div>
-          
-          <div class="form-group">
-            <label class="custom-file-upload form-control">
-              <input type="file" name="fotos_evento" accept="image/*" multiple> Fotos do Evento
-            </label>
-          </div>
-          
-          <div class="form-group">
-            <button type="submit" class="btn-enviar">Enviar</button>
-          </div>
-          
+            <button type="submit" class="btn btn-success">Cadastrar Evento</button>
         </form>
-      </div>
     </div>
-  
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-  </body>
+    <script> document.querySelectorAll('.plan-card').forEach(card => {
+      card.addEventListener('click', function() {
+          // Remove a classe 'selected' de todos os cards
+          document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+          // Adiciona a classe 'selected' ao card clicado
+          this.classList.add('selected');
+          // Atualiza o valor do input oculto
+          document.getElementById('selected_plan').value = this.getAttribute('data-plan');
+      });
+  });</script>
+</body>
 </html>

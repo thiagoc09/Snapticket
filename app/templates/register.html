@@ -6,17 +6,52 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 </head>
 <body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <a class="navbar-brand" href="{{ url_for('main.home') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo SnapTicket" style="height: 120px;">
+        </a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+              {% if current_user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.my_photos') }}">Minhas fotos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.cart') }}">Meu carrinho</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.cadastro_evento') }}">Produtor de evento</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.register') }}">Cadastro</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </nav>
+      </header>
     <div class="register-container">
-        <h2>Crie sua conta SnapTicket</h2>
+        <h2>Cadastro</h2>
         <form method="post" enctype="multipart/form-data">
             <input type="text" placeholder="Nome" name="nome" required>
             <input type="email" placeholder="E-mail" name="email" required>
             <input type="password" name="senha" placeholder="Senha" required>
-            <input type="password" name="confirmar_senha" placeholder="Confirmar senha" required>
-            <input type="file" id="selfie" name="selfie" accept="image/*" style="display: none;">
-            <label for="selfie" class="btn-upload">Envie uma selfie</label>
-            <input type="file" id="selfie" name="selfie" accept="image/*" style="display: none;">
-            
+            <input type="password" name="confirm_senha" placeholder="Confirmar Senha" required>
+            <div class="file-input-container">
+                <button type="button" onclick="document.getElementById('selfie').click()">Envie uma selfie</button>
+                <input type="file" id="selfie" name="selfie" accept="image/*" style="display: none;">
+            </div>
             <button type="submit" class="btn-submit">Finalizar cadastro</button>
         </form>
         <div class="login-footer">
