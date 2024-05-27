@@ -9,15 +9,9 @@ class Usuario(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    telefone = db.Column(db.String(20), nullable=False)
-    cpf = db.Column(db.String(20), unique=True, nullable=False)
     senha_hash = db.Column(db.String(128), nullable=False)
     caminho_selfie = db.Column(db.String(120), nullable=True)  # Caminho para a imagem de selfie
     
-    # Relacionamentos
-    fotos_usuario = db.relationship('FotoUsuario', backref='usuario', lazy='dynamic')
-    compras = db.relationship('Compra', backref='usuario', lazy='dynamic')
-
     def set_password(self, password):
         self.senha_hash = generate_password_hash(password)
 
@@ -26,23 +20,18 @@ class Usuario(db.Model, UserMixin):
 
     def __repr__(self):
         return f'<Usuario {self.nome}>'
-
+    
 class Evento(db.Model):
     __tablename__ = 'eventos'
 
     id = db.Column(db.Integer, primary_key=True)
     nome_evento = db.Column(db.String(120), nullable=False)
     data_evento = db.Column(db.DateTime, nullable=False)
-    localizacao = db.Column(db.String(120), nullable=False)
-    descricao = db.Column(db.Text, nullable=True)
     foto_capa = db.Column(db.String(120), nullable=True)  # Caminho para a foto de capa do evento
     plano_tipo = db.Column(db.String(50), nullable=False)  # Adicionado para guardar o tipo de plano ('monetize' ou 'impulsione')
     
     # Relacionamentos
     fotos_evento = db.relationship('Foto', backref='evento', lazy='dynamic')
-
-    def __repr__(self):
-        return f'<Evento {self.nome_evento}>'
 
 
 class Foto(db.Model):

@@ -130,20 +130,24 @@ def register():
     if request.method == 'POST':
         nome = request.form.get('nome')
         email = request.form.get('email')
-        telefone = request.form.get('telefone')
-        cpf = request.form.get('cpf')
         senha = request.form.get('senha')
+        confirmar_senha = request.form.get('confirm_senha')
+
+        if senha != confirmar_senha:
+            flash('Senhas não coincidem.')
+            return redirect(url_for('main.register'))
+
         if not senha:
             flash('Senha é obrigatória.')
             return redirect(url_for('main.register'))
+
         if Usuario.query.filter_by(email=email).first():
             flash('Este email já está cadastrado.')
             return redirect(url_for('main.register'))
+
         novo_usuario = Usuario(
             nome=nome,
             email=email,
-            telefone=telefone,
-            cpf=cpf,
             senha_hash=generate_password_hash(senha)
         )
         db.session.add(novo_usuario)
@@ -153,28 +157,39 @@ def register():
             db.session.rollback()
             flash('Erro ao registrar usuário. Por favor, tente novamente.')
             return redirect(url_for('main.register'))
+
         selfie = request.files.get('selfie')
         if selfie and allowed_file(selfie.filename):
             filename = secure_filename(f'{novo_usuario.id}.jpg')
             selfie_path = os.path.join(current_app.config['USER_SELFIES_FOLDER'], filename)
             selfie.save(selfie_path)
             novo_usuario.caminho_selfie = selfie_path
-            db.session.commit()
+            try:
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                flash('Erro ao salvar a selfie.')
+                return redirect(url_for('main.register'))
         else:
             flash('Tipo de arquivo não permitido para selfie.')
             return redirect(url_for('main.register'))
+
+        flash('Cadastro realizado com sucesso!')
         return redirect(url_for('main.login'))
     return render_template('register.html')
 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
 @main.route('/cadastro_evento', methods=['GET', 'POST'])
+
 def cadastro_evento():
     if request.method == 'POST':
-        nome_evento = request.form['nome_evento']
-        data_evento_str = request.form['data_evento']
-        localizacao = request.form['localizacao']
-        descricao = request.form['descricao']
+        nome_evento = request.form.get('nome_evento')
+        data_evento = request.form.get('data_evento')
+        plano_tipo = request.form.get('plano_tipo')
+
         try:
-            data_evento = datetime.strptime(data_evento_str, '%Y-%m-%d').date()
+            data_evento = datetime.strptime(data_evento, '%Y-%m-%d').date()
         except ValueError:
             flash('Formato de data inválido.')
             return redirect(url_for('cadastro_evento'))
@@ -182,36 +197,38 @@ def cadastro_evento():
         novo_evento = Evento(
             nome_evento=nome_evento,
             data_evento=data_evento,
-            localizacao=localizacao,
-            descricao=descricao
+            plano_tipo=plano_tipo
         )
         db.session.add(novo_evento)
-        db.session.commit()
+        db.session.commit()  # Commit aqui para gerar o ID do evento
 
+        # Processando a foto de capa
         foto_capa = request.files.get('foto_capa')
-        if foto_capa:
+        if foto_capa and foto_capa.filename != '':
             foto_capa_filename = secure_filename(foto_capa.filename)
-            foto_capa_path_fs = os.path.join(current_app.config['UPLOAD_FOLDER'], 'event_covers', foto_capa_filename)
-            os.makedirs(os.path.dirname(foto_capa_path_fs), exist_ok=True)
-            foto_capa.save(foto_capa_path_fs)
-            foto_capa_path_db = os.path.join('uploads', 'event_covers', foto_capa_filename).replace('\\', '/')
-            novo_evento.foto_capa = foto_capa_path_db
+            foto_capa_path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'event_covers', foto_capa_filename)
+            foto_capa.save(foto_capa_path)
+            novo_evento.foto_capa = os.path.join('uploads', 'event_covers', foto_capa_filename).replace('\\', '/')
 
+        # Processando múltiplas fotos do evento
         fotos_evento = request.files.getlist('fotos_evento')
         for foto in fotos_evento:
-            if foto:
+            if foto and foto.filename != '':
                 filename = secure_filename(foto.filename)
-                evento_folder_rel_path = os.path.join('uploads', 'event_images', str(novo_evento.id))
-                evento_folder_full_path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'event_images', str(novo_evento.id))
-                if not os.path.exists(evento_folder_full_path):
-                    os.makedirs(evento_folder_full_path)
-                foto.save(os.path.join(evento_folder_full_path, filename))
-                imagem_evento = ImagemEvento(evento_id=novo_evento.id, caminho_imagem=os.path.join(evento_folder_rel_path, filename))
+                evento_folder_path = os.path.join(current_app.config['UPLOAD_FOLDER'], 'event_photos', str(novo_evento.id))
+                os.makedirs(evento_folder_path, exist_ok=True)
+                foto_path = os.path.join(evento_folder_path, filename)
+                foto.save(foto_path)
+                imagem_evento = ImagemEvento(
+                    evento_id=novo_evento.id,
+                    caminho_imagem=os.path.join('uploads', 'event_photos', str(novo_evento.id), filename)
+                )
                 db.session.add(imagem_evento)
 
-        db.session.commit()
+        db.session.commit()  # Final commit para salvar tudo
         flash('Evento cadastrado com sucesso!')
         return redirect(url_for('main.home'))
+
     return render_template('cadastro_evento.html')
 
 @main.route('/search_events', methods=['GET'])

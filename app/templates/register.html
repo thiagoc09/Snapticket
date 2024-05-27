@@ -2,8 +2,11 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro - SnapTicket</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cadastro_evento.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
 </head>
 <body>
     <header>
@@ -16,19 +19,8 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto">
-              {% if current_user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('main.my_photos') }}">Minhas fotos</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('main.cart') }}">Meu carrinho</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
-              </li>
-              {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('main.cadastro_evento') }}">Produtor de evento</a>
+                <a class="nav-link" href="{{ url_for('main.home') }}">Home</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('main.register') }}">Cadastro</a>
@@ -36,27 +28,42 @@
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
               </li>
-              {% endif %}
             </ul>
           </div>
         </nav>
-      </header>
-    <div class="register-container">
-        <h2>Cadastro</h2>
-        <form method="post" enctype="multipart/form-data">
-            <input type="text" placeholder="Nome" name="nome" required>
-            <input type="email" placeholder="E-mail" name="email" required>
-            <input type="password" name="senha" placeholder="Senha" required>
-            <input type="password" name="confirm_senha" placeholder="Confirmar Senha" required>
-            <div class="file-input-container">
-                <button type="button" onclick="document.getElementById('selfie').click()">Envie uma selfie</button>
-                <input type="file" id="selfie" name="selfie" accept="image/*" style="display: none;">
-            </div>
-            <button type="submit" class="btn-submit">Finalizar cadastro</button>
-        </form>
-        <div class="login-footer">
-            Possui cadastro? <a href="{{ url_for('main.login') }}">Acessar</a>
-        </div>
+    </header>
+    <div class="container mt-5">
+        <h1 class="text-center">Faça seu cadastro e encontre suas fotos de forma rapida e simplificada</h1>
+        <p class="text-center text-muted">Usamos tecnologia de ponta para entregar as fotos oficiais do evento que participou</p>
+        
+        <form class="mt-5" method="post" enctype="multipart/form-data">
+          <h2>Faça seu cadastro</h2>
+          <div class="form-group">
+              <label for="nome">Nome</label>
+              <input type="text" id="nome" name="nome" class="form-control" placeholder="Digite seu nome completo" required>
+          </div>
+          <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" class="form-control" placeholder="Digite seu email" required>
+          </div>
+          <div class="form-group">
+              <label for="senha">Senha</label>
+              <input type="password" id="senha" name="senha" class="form-control" placeholder="Digite sua senha" required>
+          </div>
+          <div class="form-group">
+              <label for="confirmarSenha">Confirmar Senha</label>
+              <input type="password" id="confirmarSenha" name="confirm_senha" class="form-control" placeholder="Confirme sua senha" required>
+          </div>
+          <div class="form-group selfie-group">
+              <button type="button" class="btn btn-upload" onclick="document.getElementById('selfie').click()">Envie uma selfie</button>
+              <input type="file" id="selfie" name="selfie" accept="image/*" style="display: none;">
+          </div>
+          <button type="submit" class="btn btn-success">Finalizar cadastro</button>
+      </form>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

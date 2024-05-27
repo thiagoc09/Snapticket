@@ -78,42 +78,43 @@
                 </div>
             </div>
         </div>
-
-        <form class="mt-5">
-            <h2>Cadastre seu evento</h2>
-
-            <div class="form-group">
-                <label for="eventName">Nome do Evento</label>
-                <input type="text" id="eventName" class="form-control" placeholder="Nome do Evento">
-            </div>
-            <div class="form-group">
-                <label for="eventDate">Data do Evento</label>
-                <input type="date" id="eventDate" class="form-control">
-            </div>
-            <div class="form-group">
-                <label for="coverPhoto">Foto de Capa</label>
-                <input type="file" id="coverPhoto" class="form-control-file">
-            </div>
-            <div class="form-group">
-                <label for="eventPhotos">Fotos do Evento</label>
-                <input type="file" id="eventPhotos" class="form-control-file" multiple>
-            </div>
-            <div class="form-group">
+        <form class="mt-5" method="post" enctype="multipart/form-data">
+          <h2>Cadastre seu evento</h2>
+      
+          <div class="form-group">
+              <label for="eventName">Nome do Evento</label>
+              <input type="text" id="eventName" name="nome_evento" class="form-control" placeholder="Nome do Evento" required>
+          </div>
+          <div class="form-group">
+              <label for="eventDate">Data do Evento</label>
+              <input type="date" id="eventDate" name="data_evento" class="form-control" required>
+          </div>
+          <div class="form-group">
+              <label for="coverPhoto">Foto de Capa</label>
+              <input type="file" id="coverPhoto" name="foto_capa" class="form-control-file">
+          </div>
+          <div class="form-group">
+              <label for="eventPhotos">Fotos do Evento</label>
+              <input type="file" id="eventPhotos" name="fotos_evento" class="form-control-file" multiple>
+          </div>
+          <div class="form-group">
               <label for="plan">Escolha seu Plano:</label>
               <div class="plan-options">
                   <div class="plan-card" data-plan="monetize">
                       <h4>Plano Monetize</h4>
-                      <p2>Venda as fotos do seu evento </p2>
+                      <p2>Venda as fotos do seu evento</p2>
                   </div>
                   <div class="plan-card" data-plan="impulsione">
                       <h4>Plano Impulsione</h4>
                       <p2>Aumente o engajamento de seu evento</p2>
                   </div>
               </div>
-              <input type="hidden" name="selected_plan" id="selected_plan">
+              <input type="hidden" name="plano_tipo" id="selected_plan">
+
           </div>
-            <button type="submit" class="btn btn-success">Cadastrar Evento</button>
-        </form>
+          <button type="submit" class="btn btn-success">Cadastrar Evento</button>
+      </form>
+      
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
