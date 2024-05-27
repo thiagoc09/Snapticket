@@ -1,8 +1,8 @@
-"""Initial migration.
+"""Add plan type and watermark info
 
-Revision ID: fd331db76f29
+Revision ID: 5df60544aea1
 Revises: 
-Create Date: 2024-05-13 17:07:28.501543
+Create Date: 2024-05-27 00:49:14.496322
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'fd331db76f29'
+revision = '5df60544aea1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,6 +25,7 @@ def upgrade():
     sa.Column('localizacao', sa.String(length=120), nullable=False),
     sa.Column('descricao', sa.Text(), nullable=True),
     sa.Column('foto_capa', sa.String(length=120), nullable=True),
+    sa.Column('plano_tipo', sa.String(length=50), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('usuarios',
@@ -44,6 +45,7 @@ def upgrade():
     sa.Column('evento_id', sa.Integer(), nullable=False),
     sa.Column('caminho_foto', sa.String(length=120), nullable=False),
     sa.Column('timestamp', sa.DateTime(), nullable=True),
+    sa.Column('sem_marca_dagua', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['evento_id'], ['eventos.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

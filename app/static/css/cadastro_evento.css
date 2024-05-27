@@ -21,12 +21,16 @@ h1, h2, h3 {
     color: #fff; /* White for high contrast and focus */
     font-weight: 600; /* Bold font for emphasis */
 }
+/* Headings for clear section demarcation */
+h1 {
+    font-size: 2em;
+}
 
 /* Subtle paragraph styling for better legibility */
 p {
     color: #ccc; /* Light gray for less emphasis compared to headers */
     text-align: center;
-    margin-bottom: 20px; /* Spacing below paragraphs */
+    margin-bottom: 100px; /* Spacing below paragraphs */
 }
 
 /* Styling for the plan boxes */
@@ -203,5 +207,39 @@ header {
     }
     .navbar-nav {
         justify-content: center; /* Centraliza os links em telas menores */
+    }
+}
+/* Estilização dos cards dos planos para ficarem lado a lado */
+.plan-options {
+    display: flex; /* Faz os cards ficarem lado a lado */
+    justify-content: space-around; /* Espaçamento igual entre os cards */
+    margin-bottom: 20px; /* Espaço abaixo da seção dos planos */
+}
+
+.plan-card {
+    flex: 1; /* Cada card ocupa espaço igual dentro do contêiner */
+    margin: 0 10px; /* Espaço horizontal entre os cards */
+    padding: 15px; /* Espaço interno */
+    border: 2px solid transparent; /* Bordas transparentes por padrão */
+    border-radius: 8px; /* Bordas arredondadas */
+    background-color: #2c5364; /* Cor de fundo de cada card */
+    color: white; /* Cor do texto */
+    cursor: pointer; /* Indica que o elemento é clicável */
+    transition: all 0.3s ease; /* Transição suave para efeitos */
+    text-align: center; /* Texto centralizado */
+}
+
+.plan-card:hover, .plan-card.selected {
+    border-color: #28a745; /* Cor da borda ao passar o mouse ou selecionar */
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+    .plan-options {
+        flex-direction: column; /* Os cards ficam um em cima do outro em telas menores */
+    }
+    .plan-card {
+        margin-bottom: 10px; /* Espaço entre os cards quando estão em coluna */
+        width: 100%; /* Largura total para melhor visualização em dispositivos móveis */
     }
 }

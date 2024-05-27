@@ -36,12 +36,14 @@ class Evento(db.Model):
     localizacao = db.Column(db.String(120), nullable=False)
     descricao = db.Column(db.Text, nullable=True)
     foto_capa = db.Column(db.String(120), nullable=True)  # Caminho para a foto de capa do evento
+    plano_tipo = db.Column(db.String(50), nullable=False)  # Adicionado para guardar o tipo de plano ('monetize' ou 'impulsione')
     
     # Relacionamentos
     fotos_evento = db.relationship('Foto', backref='evento', lazy='dynamic')
 
     def __repr__(self):
         return f'<Evento {self.nome_evento}>'
+
 
 class Foto(db.Model):
     __tablename__ = 'fotos'
@@ -50,12 +52,14 @@ class Foto(db.Model):
     evento_id = db.Column(db.Integer, db.ForeignKey('eventos.id'), nullable=False)
     caminho_foto = db.Column(db.String(120), nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    sem_marca_dagua = db.Column(db.Boolean, default=False)  # Indica se a foto deve ter marca d'água ou não
     
     # Relacionamento com a tabela de associação
     participantes = db.relationship('FotoUsuario', backref='foto', lazy='dynamic')
 
     def __repr__(self):
         return f'<Foto {self.id} do Evento {self.evento_id}>'
+
 
 class FotoUsuario(db.Model):
     __tablename__ = 'fotos_usuarios'
