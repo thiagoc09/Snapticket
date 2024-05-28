@@ -10,7 +10,7 @@ class Config:
     UPLOAD_FOLDER = os.path.join('app','static', 'uploads')
     USER_SELFIES_FOLDER = os.path.join(UPLOAD_FOLDER, 'user_selfies')
     EVENT_COVERS_FOLDER = os.path.join(UPLOAD_FOLDER, 'event_covers')
-    EVENT_IMAGES_FOLDER = os.path.join(UPLOAD_FOLDER, 'event_images')
+    EVENT_IMAGES_FOLDER = os.path.join(UPLOAD_FOLDER, 'event_photos')
     DEFAULT_EVENT_COVER = os.path.join('images', 'eventos', 'default_cover.jpg')
     #SECRET_KEY = 'snapticket123'
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'snapticket'
