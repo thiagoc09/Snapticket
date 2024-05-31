@@ -302,14 +302,14 @@ def add_image_watermark(input_image_path, watermark_image_path, output_image_pat
     os.makedirs(os.path.dirname(output_image_path), exist_ok=True)
     
     watermarked_image.save(output_image_path, "JPEG")
-
+    
 @main.route('/view_photos/<int:event_id>')
 @login_required
 def view_photos(event_id):
     start_time = time.time()
     user_id = current_user.id
-    user_selfie_path = f'app/static/uploads/user_selfies/{user_id}.jpg'
-    event_photos_directory = f'app/static/uploads/event_photos/{event_id}'
+    user_selfie_path = os.path.join('app/static/uploads/user_selfies', f'{user_id}.jpg')
+    event_photos_directory = os.path.join('app/static/uploads/event_photos', str(event_id))
     logo_path = 'app/static/images/logo.png'
 
     # Carregando informações do evento e verificando sua existência
@@ -317,10 +317,15 @@ def view_photos(event_id):
     if not evento:
         flash('Evento não encontrado.', 'error')
         return redirect(url_for('main.home'))
-    
+
     # Verificando a existência da selfie do usuário
     if not os.path.exists(user_selfie_path):
         flash('Selfie do usuário não encontrada.', 'error')
+        return redirect(url_for('main.home'))
+
+    # Verificando a existência do diretório de fotos do evento
+    if not os.path.isdir(event_photos_directory):
+        flash('Diretório de fotos do evento não encontrado.', 'error')
         return redirect(url_for('main.home'))
 
     plano_tipo = evento.plano_tipo
@@ -331,20 +336,27 @@ def view_photos(event_id):
     photos_found = False
     for photo_name in os.listdir(event_photos_directory):
         if photo_name.lower().endswith(('.png', '.jpg', '.jpeg')):
-            photos_found = True
             photo_path = os.path.join(event_photos_directory, photo_name)
-            photo_relative_path = os.path.join(f'uploads/event_photos/{event_id}', photo_name).replace('\\', '/')
+            photo_relative_path = os.path.join('uploads/event_photos', str(event_id), photo_name).replace('\\', '/')
 
-            if photo_relative_path not in processed_photos:
-                if compare_faces_aws(user_selfie_data, load_image_bytes(photo_path)):
-                    if plano_tipo == 'monetize':
-                        # Definindo caminho do arquivo de saída para a imagem com marca d'água
-                        watermark_output_path = os.path.join('app/static/uploads/watermarked_photos', f'watermarked_{photo_name}')
-                        add_image_watermark(photo_path, logo_path, watermark_output_path)
-                        matches[photo_relative_path] = watermark_output_path.replace('app/static/', '').replace('\\', '/')
-                    else:
-                        matches[photo_relative_path] = photo_relative_path
-                    processed_photos.append(photo_relative_path)
+            # Verificar se a foto já foi processada
+            if photo_relative_path in processed_photos:
+                continue
+
+            photos_found = True
+
+            # Comparar as faces
+            if compare_faces_aws(user_selfie_data, load_image_bytes(photo_path)):
+                if plano_tipo == 'monetize':
+                    # Definindo caminho do arquivo de saída para a imagem com marca d'água
+                    watermark_output_path = os.path.join('app/static/uploads/watermarked_photos', f'watermarked_{photo_name}')
+                    add_image_watermark(photo_path, logo_path, watermark_output_path)
+                    matches[photo_relative_path] = watermark_output_path.replace('app/static/', '').replace('\\', '/')
+                else:
+                    matches[photo_relative_path] = photo_relative_path
+
+                # Marcar a foto como processada
+                processed_photos.append(photo_relative_path)
 
     session[f'user_{user_id}_photos'] = matches
     session[f'user_{user_id}_processed_photos'] = processed_photos

@@ -1,4 +1,4 @@
-#!/home/ubuntu/environment/Snapticket/venv/bin/python3
+#!/Users/murilosillos/Documents/Snapticket/venv/bin/python3.11
 
 import sys
 import json
