@@ -48,9 +48,21 @@
   <main>
     {% block content %}{% endblock %}
   </main>
-
-  <footer>
-    <!-- Rodapé do site -->
+  <footer class="footer mt-auto py-3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <ul class="list-unstyled text-center">
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="#">Contato</a></li>
+            <li><a href="#">Termos de Serviço</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <p>&copy; 2024 SnapTicket. Todos os direitos reservados.</p>
+      </div>
+    </div>
   </footer>
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

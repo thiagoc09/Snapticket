@@ -6,8 +6,23 @@
   <title>Eventos</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
+  <style>
+    .free-badge {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: rgba(0, 128, 0, 0.7);  /* Verde com transparência */
+      color: white;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;  /* Letra maiúscula */
+    }
+  </style>
 </head>
 <body>
 {% extends "base.html" %}
@@ -16,8 +31,12 @@
 
 {% block content %}
 <div class="search-section">
-    <h2 class="search-title">Suas fotos com uma selfie</h2>
-    <p class="search-subtitle">Encontre seus momentos com nossa IA</p>
+    {% if logged_in %}
+        <h2 class="search-title">Bem vindo, {{ current_user.nome.split(' ')[0] }}, basta clicar no seu evento!</h2>
+    {% else %}
+        <h2 class="search-title">Suas fotos com uma selfie</h2>
+        <p class="search-subtitle">Encontre seus momentos com nossa IA</p>
+    {% endif %}
     <form id="search-form" class="search-form">
         <input type="text" id="search-input" name="event_name" placeholder="Digite aqui o nome do evento..." class="search-input">
         <button type="submit" class="search-button">BUSCAR</button>
@@ -33,6 +52,9 @@
         {% endif %}
             <div class="card bg-dark text-light">
                 <img src="{{ url_for('static', filename=evento.foto_capa) }}" class="card-img" alt="Foto do Evento">
+                {% if evento.plano_tipo == 'impulsione' %}
+                <div class="free-badge">Free</div>
+                {% endif %}
                 <div class="card-img-overlay d-flex flex-column justify-content-end">
                     <h5 class="card-title">{{ evento.nome_evento }}</h5>
                     <p class="card-date">{{ evento.data_evento.strftime('%d/%m/%Y') }}</p>
@@ -97,6 +119,7 @@
                           <a href="/view_photos/${evento.id}" class="card-link event-link">
                           <div class="card bg-dark text-light">
                               <img src="${evento.foto_capa}" class="card-img" alt="Foto do Evento">
+                              ${evento.plano_tipo === 'impulsione' ? '<div class="free-badge">Free</div>' : ''}
                               <div class="card-img-overlay d-flex flex-column justify-content-end">
                                   <h5 class="card-title">${evento.nome_evento}</h5>
                                   <p class="card-date">${new Date(evento.data_evento).toLocaleDateString('pt-BR')}</p>
@@ -142,5 +165,33 @@ link.addEventListener('click', function() {
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 {% endblock %}
+
+<footer class="footer mt-auto py-3">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SnapTicket" class="footer-logo">
+          <ul class="list-unstyled">
+            <li><a href="#">Sobre Nós</a></li>
+            <li><a href="#">Contato</a></li>
+            <li><a href="#">Termos de Serviço</a></li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h5>Newsletter</h5>
+          <form>
+            <div class="form-group">
+              <input type="email" class="form-control" id="newsletter-email" placeholder="Seu email">
+            </div>
+            <button type="submit" class="btn btn-primary">Inscrever-se</button>
+          </form>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <p>&copy; 2024 SnapTicket. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+  
 </body>
 </html>

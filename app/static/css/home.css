@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+    background-color: #0f2027; /* Dark background for better contrast */
     font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
@@ -240,3 +240,72 @@ header {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+
+/* Adicione isso ao seu arquivo CSS */
+
+.photos-background {
+    background-color: #f0f0f0; /* exemplo de cor de fundo */
+    padding: 20px;
+}
+
+.greeting {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
+    text-align: center; /* Centralizar o texto */
+}
+
+.photos-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centralizar as fotos */
+    gap: 20px;
+}
+
+.photo-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.photo-item img {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+.footer {
+    background-color: #0f2027;  /* Cor de fundo similar ao restante da página */
+    color: #ffffff;  /* Cor do texto */
+    padding: 20px 0;
+    border-top: 1px solid #218838;  /* Linha sutil no topo do footer */
+  }
+  
+  .footer ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .footer ul li {
+    display: inline;
+    margin-right: 15px;
+  }
+  
+  .footer ul li a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+  
+  .footer ul li a:hover {
+    text-decoration: underline;
+  }
+  
+  .footer .text-center p {
+    margin: 0;
+    font-size: 14px;
+  }
+  
