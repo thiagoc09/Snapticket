@@ -33,7 +33,6 @@ class Evento(db.Model):
     # Relacionamentos
     fotos_evento = db.relationship('Foto', backref='evento', lazy='dynamic')
 
-
 class Foto(db.Model):
     __tablename__ = 'fotos'
 
@@ -49,7 +48,6 @@ class Foto(db.Model):
     def __repr__(self):
         return f'<Foto {self.id} do Evento {self.evento_id}>'
 
-
 class FotoUsuario(db.Model):
     __tablename__ = 'fotos_usuarios'
     
@@ -57,8 +55,6 @@ class FotoUsuario(db.Model):
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
     foto_id = db.Column(db.Integer, db.ForeignKey('fotos.id'))
     
-    # Poderia adicionar campos adicionais aqui, como confirmação de reconhecimento facial
-
     def __repr__(self):
         return f'<FotoUsuario {self.usuario_id} - Foto {self.foto_id}>'
 
@@ -73,7 +69,6 @@ class Compra(db.Model):
     def __repr__(self):
         return f'<Compra {self.usuario_id} - Foto {self.foto_id}>'
 
-
 class ImagemEvento(db.Model):
     __tablename__ = 'imagens_evento'
 
@@ -84,3 +79,15 @@ class ImagemEvento(db.Model):
 
     def __repr__(self):
         return f'<ImagemEvento {self.id} do Evento {self.evento_id}>'
+
+class FotosGaleria(db.Model):
+    __tablename__ = 'fotos_galeria'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    caminho_imagem = db.Column(db.String(255), nullable=False)
+    data_adicao = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('Usuario', back_populates='fotos_galeria')
+
+Usuario.fotos_galeria = db.relationship('FotosGaleria', order_by=FotosGaleria.id, back_populates='user')

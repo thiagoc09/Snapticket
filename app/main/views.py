@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from . import main
 from .. import db
-from ..models import Usuario, Evento, ImagemEvento
+from ..models import Usuario, Evento, ImagemEvento, FotosGaleria
 import os
 from datetime import datetime
 from flask_login import login_user, logout_user, login_required, LoginManager, current_user
@@ -302,7 +302,7 @@ def add_image_watermark(input_image_path, watermark_image_path, output_image_pat
     os.makedirs(os.path.dirname(output_image_path), exist_ok=True)
     
     watermarked_image.save(output_image_path, "JPEG")
-    
+
 @main.route('/view_photos/<int:event_id>')
 @login_required
 def view_photos(event_id):
@@ -312,13 +312,11 @@ def view_photos(event_id):
     event_photos_directory = f'app/static/uploads/event_photos/{event_id}'
     logo_path = 'app/static/images/logo.png'
 
-    # Carregando informações do evento e verificando sua existência
     evento = Evento.query.get(event_id)
     if not evento:
         flash('Evento não encontrado.', 'error')
         return redirect(url_for('main.home'))
-    
-    # Verificando a existência da selfie do usuário
+
     if not os.path.exists(user_selfie_path):
         flash('Selfie do usuário não encontrada.', 'error')
         return redirect(url_for('main.home'))
@@ -338,7 +336,6 @@ def view_photos(event_id):
             if photo_relative_path not in processed_photos:
                 if compare_faces_aws(user_selfie_data, load_image_bytes(photo_path)):
                     if plano_tipo == 'monetize':
-                        # Definindo caminho do arquivo de saída para a imagem com marca d'água
                         watermark_output_path = os.path.join('app/static/uploads/watermarked_photos', f'watermarked_{photo_name}')
                         add_image_watermark(photo_path, logo_path, watermark_output_path)
                         matches[photo_relative_path] = watermark_output_path.replace('app/static/', '').replace('\\', '/')
@@ -351,7 +348,6 @@ def view_photos(event_id):
     end_time = time.time()
     logging.info(f"Processed event {event_id} for user {user_id} in {end_time - start_time:.2f} seconds")
 
-    # Preparando a mensagem de saudação
     nome = current_user.nome
     quantidade_fotos = len(matches)
     nome_evento = evento.nome_evento
@@ -366,4 +362,28 @@ def view_photos(event_id):
                            fotos_encontradas=photos_found,
                            nome=nome,
                            mensagem_quantidade_fotos=mensagem_quantidade_fotos,
-                           nome_evento=nome_evento)
+                           nome_evento=nome_evento,
+                           plano_tipo=plano_tipo)
+
+@main.route('/galeria')
+@login_required
+def galeria():
+    fotos = FotosGaleria.query.filter_by(user_id=current_user.id).all()
+    return render_template('galeria.html', fotos=fotos)
+
+@main.route('/save_to_gallery', methods=['POST'])
+@login_required
+def save_to_gallery():
+    data = request.get_json()
+    foto_path = data.get('foto')
+    
+    if foto_path:
+        nova_foto = FotosGaleria(
+            user_id=current_user.id,
+            caminho_imagem=foto_path
+        )
+        db.session.add(nova_foto)
+        db.session.commit()
+        return jsonify(success=True)
+    
+    return jsonify(success=False)

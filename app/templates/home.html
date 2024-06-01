@@ -32,7 +32,9 @@
 {% block content %}
 <div class="search-section">
     {% if logged_in %}
-        <h2 class="search-title">Bem vindo, {{ current_user.nome.split(' ')[0] }}, basta clicar no seu evento!</h2>
+        <h2 class="search-title">Bem vindo {{ current_user.nome.split(' ')[0] }}. basta clicar no seu evento!</h2>
+        <p class="search-subtitle">Encontre seus momentos com nossa IA</p>
+
     {% else %}
         <h2 class="search-title">Suas fotos com uma selfie</h2>
         <p class="search-subtitle">Encontre seus momentos com nossa IA</p>
