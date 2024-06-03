@@ -3,32 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Galeria</title>
+  <title>Sua Galeria - SnapTicket</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
 </head>
 <body>
 {% extends "base.html" %}
 
-{% block title %}Galeria - SnapTicket{% endblock %}
+{% block title %}Sua Galeria - SnapTicket{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="text-center">Minha Galeria</h2>
-    <div class="row">
+<div class="container">
+    <h1 class="title my-4">Sua galeria snapticket.</h1>
+    <p class="search-subtitle">Faça o download clicando na foto.</p>
+    <div class="row justify-content-center">
         {% for foto in fotos %}
         <div class="col-md-4 mb-4">
             <div class="card bg-dark text-light">
-                <img src="{{ url_for('static', filename=foto.caminho_imagem) }}" class="card-img" alt="Foto do Evento">
+                <img src="{{ url_for('static', filename=foto.caminho_imagem) }}" class="card-img" alt="Foto da Galeria">
                 <div class="card-img-overlay d-flex flex-column justify-content-end">
-                    <h5 class="card-title">{{ foto.data_adicao.strftime('%d/%m/%Y') }}</h5>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> <!-- jQuery CDN -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script> <!-- Inclua este arquivo corretamente -->
 {% endblock %}
 </body>
 </html>

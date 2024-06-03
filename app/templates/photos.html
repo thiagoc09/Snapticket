@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/loading.css') }}">
-
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> <!-- jQuery CDN -->
 </head>
 <body>
@@ -18,14 +17,14 @@
 
 {% block content %}
 <div class="container">
-    <h1 class="my-4">Olá {{ nome }}, {{ mensagem_quantidade_fotos }} no evento {{ nome_evento }}.</h1>
+    <h1 class="title my-4">Olá {{ nome.split(' ')[0] }}, suas fotos do evento {{ nome_evento }}.</h1>
+    <p class="search-subtitle">Clique para comprar, e faça o download em sua galeria.</p>
     <div class="row">
         {% for foto in fotos %}
         <div class="col-md-4 mb-4">
             <div class="card bg-dark text-light save-photo" data-foto="{{ foto }}" data-plano="{{ plano_tipo }}">
                 <img src="{{ url_for('static', filename=foto) }}" class="card-img" alt="Foto do Evento">
                 <div class="card-img-overlay d-flex flex-column justify-content-end">
-                    <h5 class="card-title">Foto do Evento</h5>
                 </div>
             </div>
         </div>
@@ -34,35 +33,9 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.save-photo').forEach(function(card) {
-        card.addEventListener('click', function() {
-            var fotoPath = this.getAttribute('data-foto');
-            var planoTipo = this.getAttribute('data-plano');
-            
-            if (planoTipo === "impulsione") {
-                fetch("{{ url_for('main.save_to_gallery') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ foto: fotoPath })
-                }).then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        this.classList.add('saved');
-                        console.log("Foto salva na galeria: " + fotoPath);
-                    }
-                }).catch(error => {
-                    console.error("Erro ao salvar foto na galeria:", error);
-                });
-            } else {
-                console.log("Plano não é Impulsione, redirecionar para pagamento.");
-            }
-        });
-    });
-});
+  const saveToGalleryUrl = "{{ url_for('main.save_to_gallery') }}";
 </script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script> <!-- Inclua este arquivo corretamente -->
 {% endblock %}
 </body>
 </html>

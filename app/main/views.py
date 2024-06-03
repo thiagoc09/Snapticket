@@ -374,16 +374,21 @@ def galeria():
 @main.route('/save_to_gallery', methods=['POST'])
 @login_required
 def save_to_gallery():
-    data = request.get_json()
-    foto_path = data.get('foto')
-    
+    foto_path = request.form.get('foto')
     if foto_path:
-        nova_foto = FotosGaleria(
-            user_id=current_user.id,
-            caminho_imagem=foto_path
-        )
-        db.session.add(nova_foto)
-        db.session.commit()
-        return jsonify(success=True)
-    
-    return jsonify(success=False)
+        # Verificar se a foto já existe na galeria do usuário
+        existing_foto = FotosGaleria.query.filter_by(user_id=current_user.id, caminho_imagem=foto_path).first()
+        if existing_foto:
+            # Retornar uma resposta indicando que a foto já existe
+            return jsonify(success=False, message="Foto já existe na galeria")
+        else:
+            # Salvar nova foto na galeria
+            nova_foto = FotosGaleria(
+                user_id=current_user.id,
+                caminho_imagem=foto_path
+            )
+            db.session.add(nova_foto)
+            db.session.commit()
+            return jsonify(success=True, message="Foto salva na galeria")
+    return jsonify(success=False, message="Falha ao salvar a foto")
+
