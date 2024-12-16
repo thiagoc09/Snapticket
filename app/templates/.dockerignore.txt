@@ -1,0 +1,9 @@
+plaintext
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+venv/
+.env
+.DS_Store
+*.sqlite3
