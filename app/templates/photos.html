@@ -18,7 +18,12 @@
 {% block content %}
 <div class="container">
     <h1 class="title my-4">Olá {{ nome.split(' ')[0] }}, suas fotos do evento {{ nome_evento }}.</h1>
-    <p class="search-subtitle">Clique para comprar, e faça o download em sua galeria.</p>
+    <p class="search-subtitle">
+    {% if plano_tipo == "monetize" %}
+    Clique para comprar, e faça o download em sua galeria.
+{% else %}
+    Clique para salvar, e faça o download em sua galeria.
+{% endif %}</p>
     <div class="row">
         {% for foto in fotos %}
         <div class="col-md-4 mb-4">

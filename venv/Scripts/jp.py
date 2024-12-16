@@ -1,4 +1,4 @@
-#!C:\Users\thiago.caetano\Desktop\SnapTicket\venv\Scripts\python.exe
+#!C:\Users\thiag\OneDrive\Área de Trabalho\snapticket\Snapticket\venv\Scripts\python.exe
 
 import sys
 import json
